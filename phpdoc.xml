@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+  <title><h1>PHPDoc: RIDERs Server Manager</h1></title>
+  <parser>
+    <default-package-name>de\campingrider\servermanager</default-package-name>
+    <encoding>utf-8</encoding>
+    <target>./doc</target>
+  </parser>
+  <transformer>
+    <target>./doc</target>
+  </transformer>
+  <files>
+    <directory>./classes</directory>
+  </files>
+</phpdoc>
