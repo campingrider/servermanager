@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <phpdoc>
-  <title><h1>PHPDoc: RIDERs Server Manager</h1></title>
+  <title>PHPDoc: RIDERs Server Manager</title>
   <parser>
     <default-package-name>de\campingrider\servermanager</default-package-name>
     <encoding>utf-8</encoding>
@@ -9,6 +9,9 @@
   <transformer>
     <target>./doc</target>
   </transformer>
+  <transformations>
+    <template name="clean" />
+  </transformations>
   <files>
     <directory>./classes</directory>
   </files>
