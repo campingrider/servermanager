@@ -164,6 +164,8 @@ class Server
                 echo 'sent shutdown command to server; shutting down.';
             }
 
+            echo 'received call for action, will reload page in 20 seconds';
+
             echo '<script>window.setTimeout(function() {
                 let loc = window.location.protocol + "//" + window.location.host + window.location.pathname; 
                 window.location.replace(loc); 
