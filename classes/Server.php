@@ -148,15 +148,15 @@ class Server
     public function processAction($action, ...$params)
     {
         if ("powerbutton" == $action) {
-            $shutdowncommand = "ssh root@" . $this->settings['ip'] . " 'shutdown -h now'";
-            $shellreturn = shell_exec(shutdowncommand);
-            echo 'executed ' . $shutdowncommand;
-            echo 'got in return: <pre>' . $shellreturn . '</pre>';
-            if (false !== strpos($shellreturn, 'No route to host')) {
+            $ssh_command = "ssh root@" . $this->settings['ip'];
+            if ("" == shell_exec($ssh_command)) {
                 $wakecommand = 'wakeonlan ' . $this->settings['mac_address'];
                 $shellreturn = shell_exec($wakecommand);
                 echo 'executed ' . $wakecommand;
                 echo 'got in return: <pre>' . $shellreturn . '</pre>';
+            } else {
+                $shutdowncommand =  $ssh_command . " 'shutdown -h now'";
+                $shellreturn = shell_exec(shutdowncommand);
             }
         }
     }
