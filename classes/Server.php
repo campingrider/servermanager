@@ -161,6 +161,7 @@ class Server
             } else {
                 $shutdowncommand =  $ssh_command . " 'shutdown -h now'";
                 $shellreturn = shell_exec(shutdowncommand);
+                echo 'sent shutdown command to server; shutting down.';
             }
         }
     }
