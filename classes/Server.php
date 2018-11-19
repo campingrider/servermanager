@@ -160,7 +160,7 @@ class Server
                 echo 'got in return: <pre>' . $shellreturn . '</pre>';
             } else {
                 $shutdowncommand =  $ssh_command . " 'shutdown -h now'";
-                $shellreturn = shell_exec(shutdowncommand);
+                $shellreturn = shell_exec($shutdowncommand);
                 echo 'sent shutdown command to server; shutting down.';
             }
         }
