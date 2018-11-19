@@ -141,6 +141,10 @@ class Server
         $html .= '<button type="submit"><img  style="width:2em;" src="./svg/power-off.svg"></button>';
         $html .= '</form>';
 
+        // TODO: Implement in a right manner
+        $html .= '<h2>Ping-Abfrage (Serverstatus)</h2>';
+        $html .= '<pre>' . shell_exec('ping ' . $this->settings['ip'] . ' -w 3') . '</pre>';
+
         return $html;
     }
 
