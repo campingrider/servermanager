@@ -39,5 +39,14 @@
         <header>
             <h1><?php echo $manager->getTitle(); ?></h1>
         </header>
+        <main>
+            <?php echo $manager->assembleHTML(); ?>
+            <?php
+            // TODO: implement in a right manner
+            if (isset($_REQUEST['action']) && isset($_REQUEST['server'])) {
+                $manager->processAction($_REQUEST['server'], $_REQUEST['action']);
+            }
+            ?>
+        </main>
     </body>
 </html>
