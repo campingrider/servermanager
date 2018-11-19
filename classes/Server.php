@@ -163,6 +163,11 @@ class Server
                 $shellreturn = shell_exec($shutdowncommand);
                 echo 'sent shutdown command to server; shutting down.';
             }
+
+            echo '<script>window.setTimeout(function() {
+                let loc = window.location.protocol + "//" + window.location.host + window.location.pathname; 
+                window.location.replace(loc); 
+            }, 20000);</script>';
         }
     }
 }
