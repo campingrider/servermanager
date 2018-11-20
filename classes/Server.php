@@ -135,7 +135,7 @@ class Server
         $html .= '<h1>Server: ' . $this->getTitle() . '</h1>';
         $html .= "</header>";
 
-        $html .= '<form action="" method="GET">';
+        $html .= '<form action="" method="POST">';
         $html .= '<input type="hidden" name="server" value="' . $this->server_id . '">';
         $html .= '<input type="hidden" name="action" value="powerbutton">';
         $html .= '<button type="submit"><img  style="width:2em;" src="./svg/power-off.svg"></button>';

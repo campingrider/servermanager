@@ -43,8 +43,8 @@
             <?php echo $manager->assembleHTML(); ?>
             <?php
             // TODO: implement in a right manner
-            if (isset($_REQUEST['action']) && isset($_REQUEST['server'])) {
-                $manager->processAction($_REQUEST['server'], $_REQUEST['action']);
+            if (isset($_POST['action']) && isset($_POST['server'])) {
+                $manager->processAction($_POST['server'], $_POST['action']);
             }
             ?>
         </main>
