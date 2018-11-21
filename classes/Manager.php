@@ -1,8 +1,9 @@
 <?php
 /**
- * Central class managing all features and content
+ * contains class Manager
  *
- * Cares for managing all servers and services and displays them to the user.
+ * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License version 3
+ * @author Camping_RIDER a.k.a. Janosch Zoller <janosch.zoller@gmx.de>
  *
  * @package campingrider\servermanager
  */
