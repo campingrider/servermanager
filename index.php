@@ -1,5 +1,7 @@
 <?php
     namespace campingrider\servermanager;
+
+    session_start();
     
     spl_autoload_register(function ($name) {
         if (strpos($name, __NAMESPACE__) === 0) {
@@ -20,6 +22,7 @@
     });
     
     $manager = new Manager("./custom/settings.ini");
+
     ?>
 
 <!DOCTYPE html>
@@ -46,9 +49,6 @@
             if (isset($_POST['action']) && isset($_POST['server'])) {
                 $manager->processAction($_POST['server'], $_POST['action']);
             }
-            ?>
-            <?php
-                phpinfo();
             ?>
         </main>
     </body>

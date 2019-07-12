@@ -21,6 +21,13 @@ class Manager
 {
 
     /**
+     * Security handler working for this manager.
+     *
+     * @var security\Doorman doorman
+     */
+    private $doorman;
+
+    /**
      * Contains description for all settings which can be written out to an ini file.
      *
      * @var string[] $settings_descriptions
@@ -29,6 +36,8 @@ class Manager
         'title'           => 'The following phrase is shown as a title for the server manager',
         'banner_path'     => 'The following path points to the banner image',
         'server_dir_path' => 'Path to the directory containing the configuration directories of all the servers',
+        'users_path'      => 'The following path points to the file where user info is stored',
+        'groups_path'     => 'The following path points to the file where group info is stored'
     );
 
     /**
@@ -39,9 +48,11 @@ class Manager
      * @var string[] $settings
      */
     private $settings = array(
-        'title'       => 'Title not configured yet',
-        'banner_path' => 'no_path.png',
-        'server_dir_path' => './servers'
+        'title'           => 'Title not configured yet',
+        'banner_path'     => 'no_path.png',
+        'server_dir_path' => './servers',
+        'users_path'      => './custom/users.ini',
+        'groups_path'      => './custom/groups.ini'
     );
 
     /**
@@ -102,6 +113,8 @@ class Manager
             }
             file_put_contents($settings, $content);
         }
+
+        $this->doorman = new security\Doorman($this->settings['users_path'], $this->settings['groups_path']);
 
         $this->loadServers();
     }
