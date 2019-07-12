@@ -170,6 +170,42 @@ class Manager
         return $html;
     }
 
+    /**
+     * Evaluates the Path to the root of the application.
+     *
+     * Internally, $_SERVER['SCRIPT_NAME'] is used, so if that is not available, the app will not be able to run.
+     *
+     * @throws \Exception Thrown if $_SERVER doesn't contain necessary information.
+     *
+     * @return string Path from domain to root of application.
+     */
+    private function getPathPrefix()
+    {
+        if (!isset($_SERVER['SCRIPT_NAME'])) {
+            throw new Exception('Failure: Can not determine SCRIPT_NAME.');
+        }
+
+        $prefix = substr($_SERVER['SCRIPT_NAME'], 0, -10);
+
+        return $prefix;
+    }
+
+    /**
+     * Evaluates the current Path relative to the root of the application.
+     *
+     * Internally, $_SERVER['REQUEST_URI'] is used, so if that is not available, the app will not be able to run.
+     *
+     * @throws \Exception Thrown if $_SERVER doesn't contain necessary information.
+     *
+     * @return string Path from root of application to current page.
+     */
+    public function getCurrentPath()
+    {
+        $prefix = $this->getPathPrefix();
+        $curPath = substr($_SERVER['REQUEST_URI'], strlen($prefix));
+        return $curPath;
+    }
+
     // TODO: implement in a right manner
     public function processAction($serverid, $action, ...$params)
     {

@@ -1,0 +1,5 @@
+RewriteEngine on
+
+RewriteCond %{REQUEST_URI} !/(svg|doc|css|js)/
+RewriteCond %{REQUEST_URI} !index.php$
+RewriteRule (.*)			index.php

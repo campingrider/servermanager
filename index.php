@@ -47,6 +47,9 @@
                 $manager->processAction($_POST['server'], $_POST['action']);
             }
             ?>
+            <?php
+                phpinfo();
+            ?>
         </main>
     </body>
 </html>
