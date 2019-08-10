@@ -244,6 +244,8 @@ class Server
         $matches = array();
         preg_match('/(\d)+\%/', $answer, $matches);
 
+        print_r($matches);
+
         return intval($matches[1]);
     }
 
