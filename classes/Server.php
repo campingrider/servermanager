@@ -146,8 +146,8 @@ class Server
 
         // TODO: Implement in a right manner
         $html .= '<h2>Ping-Abfrage (Serverstatus)</h2>';
-        $html .= '<pre>Ping-Abfrage aktuell nicht verfügbar.</pre>';
-        // $html .= '<pre>' . shell_exec('ping ' . $this->settings['ip'] . ' -w 1') . '</pre>';
+        // $html .= '<pre>Ping-Abfrage aktuell nicht verfügbar.</pre>';
+        $html .= '<pre>' . shell_exec('ping ' . $this->settings['ip'] . ' -w 1') . '</pre>';
 
         return $html;
     }
