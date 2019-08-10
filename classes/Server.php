@@ -162,7 +162,6 @@ class Server
     public function processAction($action, ...$params)
     {
         if ("powerbutton" == $action) {
-
             try {
                 $shellreturn = $this->exec('shutdown -h now');
                 echo 'sent shutdown command to server; shutting down.';
