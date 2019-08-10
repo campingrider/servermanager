@@ -242,7 +242,7 @@ class Server
             $answer = shell_exec('ping ' . $this->settings['ip'] . ' -w 1');
         }
         $matches = array();
-        preg_match('/(\d)+\%/', $answer, $matches);
+        preg_match('/(\d+)\%/', $answer, $matches);
 
         print_r($matches);
 
