@@ -8,8 +8,10 @@ body {
   margin: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  background-color: #009;
+  background-color: #09F;
   background-image: linear-gradient(to bottom right, #09F, #69C, #969);
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 body>header {
