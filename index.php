@@ -50,6 +50,11 @@
                 $manager->processAction($_POST['server'], $_POST['action']);
             }
             ?>
+            <?php
+            if (array_key_exists('info', $_GET)) {
+                phpinfo();
+            }
+            ?>
         </main>
     </body>
 </html>
