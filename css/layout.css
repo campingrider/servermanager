@@ -54,6 +54,19 @@ body>main {
   }
 }
 
-body>main>* {
-  width: 30em;
+@media (min-width: 92em) {
+  body>main {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media (min-width: 122em) {
+  body>main {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+}
+
+body>main>section {
+  width: 29em;
+  margin: 0.5em auto;
 }
