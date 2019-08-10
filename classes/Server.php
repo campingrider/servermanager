@@ -139,8 +139,29 @@ class Server
     {
         $status = $this->getStatus();
 
+        $img = '<img style="width:1em;" ';
+        $short = 'status-';
+        switch ($status) {
+            case Server::STATUS_LISTENING:
+                $text = 'Bereit!';
+                $short .= 'listening';
+                $img .= 'alt="Bereit" src="./svg/check.svg">';
+                break;
+            case Server::STATUS_RUNNING:
+                $text = 'Noch nicht bereit!';
+                $short .= 'running';
+                $img .= 'alt="Nicht Bereit" src="./svg/hourglass.svg">';
+                break;
+            case Server::STATUS_OFF:
+            default:
+                $text = 'Ausgeschaltet!';
+                $short .= 'off';
+                $img .= 'alt="Ausgeschaltet" src="./svg/close.svg">';
+                break;
+        }
+
         $html = '';
-        $html .= '<section class="server">';
+        $html .= '<section class="server ' . $short . '">';
         $html .= "<header>";
         
         $html .= '<img src="./svg/server.svg" alt="Server: ">';
@@ -157,23 +178,7 @@ class Server
         
         $html .= "</header>";
 
-        $html .= '<p>Status: ';
-
-        $html .= '<img style="width:2em;" ';
-
-
-        switch ($status) {
-            case Server::STATUS_LISTENING:
-                $html .= 'alt="Bereit" src="./svg/check.svg">';
-                break;
-            case Server::STATUS_RUNNING:
-                $html .= 'alt="Nicht Bereit" src="./svg/hourglass.svg">';
-                break;
-            case Server::STATUS_OFF:
-            default:
-                $html .= 'alt="Ausgeschaltet" src="./svg/close.svg">';
-                break;
-        }
+        $html .= '<p style="text-align: center;">' . $img . ' Serverstatus: ' . $text . ' ' . $img;
 
         $html .= '</p>';
         $html .= '</section>';

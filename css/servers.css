@@ -65,3 +65,31 @@
     grid-column: 2 / auto;
   }
 }
+
+/* Status-Effekte */
+.server.status-listening {
+  background-color: #9f9;
+  background-image: linear-gradient(to bottom right, white, silver, white, #c0ffc0);
+}
+.server.status-listening>header {  
+  background-color: #9f9;
+  background-image:  linear-gradient(to top, #c0ffc0, white, silver, white, #c0ffc0);
+}
+
+.server.status-running {
+  background-color: #ff9;
+  background-image: linear-gradient(to bottom right, white, silver, white, #ffffc0);
+}
+.server.status-running>header {  
+  background-color: #ff9;
+  background-image: linear-gradient(to top, #ffffc0, white, silver, white, #ffffc0);
+}
+
+.server.status-off {
+  background-color: #f99;
+  background-image: linear-gradient(to bottom right, white, silver, white, #ffc0c0);
+}
+.server.status-off>header {  
+  background-color: #f99;
+  background-image: linear-gradient(to top, #ffc0c0, white, silver, white, #ffc0c0);
+}
