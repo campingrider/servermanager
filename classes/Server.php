@@ -146,8 +146,28 @@ class Server
         $html .= '<input type="hidden" name="server" value="' . $this->server_id . '">';
         $html .= '<input type="hidden" name="action" value="powerbutton">';
         $html .= '<button type="submit" title="An-/Abschalten">';
-        $html .= '<img  style="width:2em;" src="./svg/power-off.svg" alt="An-/Abschalten!">';
+        $html .= '<img style="width:2em;" src="./svg/power-off.svg" alt="An-/Abschalten!">';
         $html .= '</button>';
+        $html .= '<p>Status: ';
+
+        $html .= '<img style="width:2em;" ';
+
+        $status = $this->getStatus();
+
+        switch ($status) {
+            case Server::STATUS_LISTENING:
+                $html .= 'alt="Bereit" src="./svg/check.svg">';
+                break;
+            case Server::STATUS_RUNNING:
+                $html .= 'alt="Nicht Bereit" src="./svg/hourglass.svg">';
+                break;
+            case Server::STATUS_OFF:
+            default:
+                $html .= 'alt="Ausgeschaltet" src="./svg/close.svg">';
+                break;
+        }
+
+        $html .= '</p>';
         $html .= '</form>';
 
         // TODO: Implement in a right manner
@@ -204,5 +224,52 @@ class Server
         // assemble command and escape command
         $ssh_command .= ' ' . \escapeshellarg($command);
         return \shell_exec($ssh_command);
+    }
+
+    /**
+     * Try to ping the server based on the current operating system.
+     *
+     * @return int Integer between 0 and 100 referring to the percentage of lost ping packets.
+     */
+    private function getLostPingPercentage()
+    {
+        $answer = '';
+        if (strtoupper(\substr(php_uname('s'), 0, 3)) === 'WIN') {
+            // we're running on windows
+            $answer = shell_exec('ping ' . $this->settings['ip'] . '-n 1 -w 1');
+        } else {
+            // we're running on linux
+            $answer = shell_exec('ping ' . $this->settings['ip'] . ' -w 1');
+        }
+        $matches = array();
+        preg_match('/(\d)+\%/', $answer, $matches);
+
+        return intval($matches[1]);
+    }
+
+    const STATUS_OFF = 0;
+    const STATUS_RUNNING = 1;
+    const STATUS_LISTENING = 2;
+    
+    /**
+     * Determines whether the server is running and listening for commands.
+     *
+     * @return int Integer describing current server status.
+     */
+    private function getStatus()
+    {
+        try {
+            $this->exec('');
+            return Server::STATUS_LISTENING;
+        } catch (NotRunningException $e) {
+            // try whether server responds to ping
+            if ($this->getLostPingPercentage() < 100) {
+                return Server::STATUS_RUNNING;
+            } else {
+                return Server::STATUS_OFF;
+            }
+        }
+
+        return Server::STATUS_OFF;
     }
 }
