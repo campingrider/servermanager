@@ -202,8 +202,7 @@ class Server
         }
 
         // assemble command and escape command
-        $ssh_command .= "ssh root@" . $this->settings['ip'] . ' ' . \escapeshellarg($command);
-        print_r('>' . $ssh_command . '<');
+        $ssh_command .= ' ' . \escapeshellarg($command);
         return \shell_exec($ssh_command);
     }
 }
