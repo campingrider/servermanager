@@ -10,23 +10,58 @@
   padding: 0.5ex;
 }
 
-/* header */
+/* header und header-Action-Button */
 
 .server>header {
   border-bottom: 0.3ex solid black;
   margin-bottom: 0.5ex;
   background-image: linear-gradient(to top, white, silver);
+  display:grid;
+  grid-template-rows: 3em 1fr;
+  grid-template-columns: 3em 1fr 3em;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .server>header>h1 {
-  margin: 0.5ex;
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
   text-align: center;
+  font-size: 2em;
+  grid-column: 1 / span 3;
+  grid-row: 2 / auto;
 }
 
-.server>header>h1>img {
-  width: 1em;
-  float: left;
+.server>header img {
+  width: 2.5em;
 }
 
-/* Action-Buttons */
+.server>header>img {
+  grid-column: 1 / auto;
+  grid-row: 1 / auto;
+  margin: auto;
+}
 
+.server>header>form {
+  grid-column: 3 / auto;
+  grid-row: 1 / auto;
+  margin: auto;
+}
+
+.server>header>form>button {
+  padding: 0;
+}
+
+@media (min-width: 25em) {
+  .server>header {
+    grid-template-rows: 1fr;
+    grid-template-columns: 3em 1fr 3em;
+    justify-content: space-around;
+    justify-content: space-evenly;
+  }
+  
+  .server>header>h1 {
+    grid-row: 1 / auto;
+    grid-column: 2 / auto;
+  }
+}

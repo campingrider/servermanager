@@ -177,9 +177,7 @@ class Manager
     {
         $html = '';
         foreach ($this->servers as $server) {
-            $html .= '<section class="server">';
             $html .= $server->assembleHTML();
-            $html .= '</section>';
         }
         return $html;
     }

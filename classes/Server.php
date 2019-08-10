@@ -137,22 +137,30 @@ class Server
      */
     public function assembleHTML()
     {
+        $status = $this->getStatus();
+
         $html = '';
+        $html .= '<section class="server">';
         $html .= "<header>";
-        $html .= '<h1><img src="./svg/server.svg" alt="Server: ">' . $this->getTitle() . '</h1>';
-        $html .= "</header>";
+        
+        $html .= '<img src="./svg/server.svg" alt="Server: ">';
+        
+        $html .= '<h1>' . $this->getTitle() . '</h1>';
 
         $html .= '<form action="" method="POST">';
         $html .= '<input type="hidden" name="server" value="' . $this->server_id . '">';
         $html .= '<input type="hidden" name="action" value="powerbutton">';
         $html .= '<button type="submit" title="An-/Abschalten">';
-        $html .= '<img style="width:2em;" src="./svg/power-off.svg" alt="An-/Abschalten!">';
+        $html .= '<img src="./svg/power-off.svg" alt="An-/Abschalten!">';
         $html .= '</button>';
+        $html .= '</form>';
+        
+        $html .= "</header>";
+
         $html .= '<p>Status: ';
 
         $html .= '<img style="width:2em;" ';
 
-        $status = $this->getStatus();
 
         switch ($status) {
             case Server::STATUS_LISTENING:
@@ -168,7 +176,7 @@ class Server
         }
 
         $html .= '</p>';
-        $html .= '</form>';
+        $html .= '</section>';
 
         return $html;
     }
