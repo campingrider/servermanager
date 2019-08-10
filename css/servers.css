@@ -1,0 +1,32 @@
+.server {
+  background-color: #999;
+  background-image: linear-gradient(to bottom right, white, silver);
+  border: 0.5ex outset #777;
+}
+
+/* gruppierende Elemente */
+
+.server>* {
+  padding: 0.5ex;
+}
+
+/* header */
+
+.server>header {
+  border-bottom: 0.3ex solid black;
+  margin-bottom: 0.5ex;
+  background-image: linear-gradient(to top, white, silver);
+}
+
+.server>header>h1 {
+  margin: 0.5ex;
+  text-align: center;
+}
+
+.server>header>h1>img {
+  width: 1em;
+  float: left;
+}
+
+/* Action-Buttons */
+

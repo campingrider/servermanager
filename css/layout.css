@@ -37,7 +37,7 @@ body>header {
 body>main {
   grid-row: 3 / auto;
   width: 100vw;
-  padding: 1vh 1em;
+  padding: 1vh 0;
 }
 
 body>footer {
@@ -58,30 +58,22 @@ body>header h1 {
 
 /* main elements and main positioning */
 body>main {  
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+body>main>section {
+  width: 100vw;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
 }
 
 @media (min-width: 30em) {
   body>main>section {
     width: 29em;
-    margin: 0.5em auto;
-  }
-}
-
-@media (min-width: 62em) {
-  body>main {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (min-width: 92em) {
-  body>main {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-}
-
-@media (min-width: 122em) {
-  body>main {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    margin: 0.5em;
   }
 }
