@@ -49,6 +49,13 @@ body>main {
   display: grid;
 }
 
+@media (min-width: 30em) {
+  body>main>section {
+    width: 29em;
+    margin: 0.5em auto;
+  }
+}
+
 @media (min-width: 62em) {
   body>main {
     grid-template-columns: 1fr 1fr;
@@ -65,9 +72,4 @@ body>main {
   body>main {
     grid-template-columns: 1fr 1fr 1fr 1fr;
   }
-}
-
-body>main>section {
-  width: 29em;
-  margin: 0.5em auto;
 }
