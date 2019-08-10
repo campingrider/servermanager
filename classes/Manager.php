@@ -11,6 +11,7 @@
 namespace campingrider\servermanager;
 
 use \InvalidArgumentException as InvalidArgumentException;
+use campingrider\servermanager\exceptions\NotFoundException as NotFoundException;
 
 /**
  * This class contains overall settings and controls the behavior of the system.
@@ -80,7 +81,7 @@ class Manager
             if (is_file($settings)) {
                 $loaded_settings = parse_ini_file($settings);
             } else {
-                throw new RuntimeException("File $settings not found!");
+                throw new NotFoundException("File $settings not found!");
             }
         } elseif (is_array($settings)) {
             $loaded_settings = $settings;
@@ -140,7 +141,7 @@ class Manager
             }
             closedir($handle);
         } else {
-            throw new RuntimeException("Directory $dir_path not found!");
+            throw new NotFoundException("Directory $dir_path not found!");
         }
     }
 
@@ -176,7 +177,7 @@ class Manager
     {
         $html = '';
         foreach ($this->servers as $server) {
-            $html .= '<section>';
+            $html .= '<section class="server">';
             $html .= $server->assembleHTML();
             $html .= '</section>';
         }
