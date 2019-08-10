@@ -170,11 +170,6 @@ class Server
         $html .= '</p>';
         $html .= '</form>';
 
-        // TODO: Implement in a right manner
-        $html .= '<h2>Ping-Abfrage (Serverstatus)</h2>';
-        // $html .= '<pre>Ping-Abfrage aktuell nicht verfügbar.</pre>';
-        $html .= '<pre>' . shell_exec('ping ' . $this->settings['ip'] . ' -w 1') . '</pre>';
-
         return $html;
     }
 
@@ -236,15 +231,13 @@ class Server
         $answer = '';
         if (strtoupper(\substr(php_uname('s'), 0, 3)) === 'WIN') {
             // we're running on windows
-            $answer = shell_exec('ping ' . $this->settings['ip'] . '-n 1 -w 1');
+            $answer = shell_exec('ping ' . $this->settings['ip'] . ' -n 1 -w 1');
         } else {
             // we're running on linux
             $answer = shell_exec('ping ' . $this->settings['ip'] . ' -w 1');
         }
         $matches = array();
         preg_match('/(\d+)\%/', $answer, $matches);
-
-        print_r($matches);
 
         return intval($matches[1]);
     }
