@@ -10,6 +10,10 @@
 
 namespace campingrider\servermanager;
 
+use campingrider\servermanager\exceptions\NotFoundException as NotFoundException;
+use campingrider\servermanager\exceptions\ServerConfigurationException as ServerConfigurationException;
+use campingrider\servermanager\exceptions\NotRunningException as NotRunningException;
+
 /**
  * Class for representing and managing a single server machine
  *
@@ -135,19 +139,21 @@ class Server
     {
         $html = '';
         $html .= "<header>";
-        $html .= '<h1>Server: ' . $this->getTitle() . '</h1>';
+        $html .= '<h1><img src="./svg/server.svg" alt="Server: ">' . $this->getTitle() . '</h1>';
         $html .= "</header>";
 
         $html .= '<form action="" method="POST">';
         $html .= '<input type="hidden" name="server" value="' . $this->server_id . '">';
         $html .= '<input type="hidden" name="action" value="powerbutton">';
-        $html .= '<button type="submit"><img  style="width:2em;" src="./svg/power-off.svg"></button>';
+        $html .= '<button type="submit" title="An-/Abschalten">';
+        $html .= '<img  style="width:2em;" src="./svg/power-off.svg" alt="An-/Abschalten!">';
+        $html .= '</button>';
         $html .= '</form>';
 
         // TODO: Implement in a right manner
         $html .= '<h2>Ping-Abfrage (Serverstatus)</h2>';
-        // $html .= '<pre>Ping-Abfrage aktuell nicht verfügbar.</pre>';
-        $html .= '<pre>' . shell_exec('ping ' . $this->settings['ip'] . ' -w 1') . '</pre>';
+        $html .= '<pre>Ping-Abfrage aktuell nicht verfügbar.</pre>';
+        // $html .= '<pre>' . shell_exec('ping ' . $this->settings['ip'] . ' -w 1') . '</pre>';
 
         return $html;
     }
@@ -156,16 +162,15 @@ class Server
     public function processAction($action, ...$params)
     {
         if ("powerbutton" == $action) {
-            $ssh_command = "ssh root@" . $this->settings['ip'];
-            if ("" == shell_exec($ssh_command)) {
+
+            try {
+                $shellreturn = $this->exec('shutdown -h now');
+                echo 'sent shutdown command to server; shutting down.';
+            } catch (NotRunningException $e) {
                 $wakecommand = 'wakeonlan ' . $this->settings['mac_address'];
                 $shellreturn = shell_exec($wakecommand);
                 echo 'executed ' . $wakecommand;
                 echo 'got in return: <pre>' . $shellreturn . '</pre>';
-            } else {
-                $shutdowncommand =  $ssh_command . " 'shutdown -h now'";
-                $shellreturn = shell_exec($shutdowncommand);
-                echo 'sent shutdown command to server; shutting down.';
             }
 
             echo 'received call for action, will reload page in 20 seconds';
@@ -175,5 +180,47 @@ class Server
                 window.location.replace(loc); 
             }, 20000);</script>';
         }
+    }
+
+    /**
+     * Executes a command on the server.
+     *
+     * The command is invoked via ssh and executed with root user priviliges. Handle with care.
+     *
+     * @param string $command The command which shall be executed by the server.
+     * @throws ServerConfigurationException Thrown if either the webserver or the server don't use the bash as shell.
+     * @throws NotRunningException Thrown if the server is not running at the moment.
+     * @return string The output given by the server
+     */
+    private function exec($command)
+    {
+        // prepare ssh call
+        $ssh_command = "ssh root@" . $this->settings['ip'];
+
+        // try to call the server in order to ensure it is running
+        if (strlen(\shell_exec($ssh_command)) === 0) {
+            $message = 'The server you tried to issue a command on is not running.';
+            throw new NotRunningException($message);
+        }
+
+        if (\shell_exec("echo $0") != '-bash') {
+            $message = 'The machine your server manager is running on does not use bash as shell.';
+            $message .=  ' Sending commands will not be safe as special characters inside the command string can\'t';
+            $message .= ' be escaped safely. The command was not send to prevent damage to your system.';
+            $message .= "\n\r" . 'The machine returned the following for $0: ' . \shell_exec("echo $0");
+            throw new ServerConfigurationException($message);
+        }
+        
+        if (\shell_exec($ssh_command . "'echo $0'") != '-bash') {
+            $message = 'The server is not using bash as shell.';
+            $message .=  ' Sending commands will not be safe as special characters inside the command string can\'t';
+            $message .= ' be escaped safely. The command was not send to prevent damage to your system.';
+            $message .= "\n\r" . 'The server returned the following for $0: ' . \shell_exec($ssh_command . "echo $0");
+            throw new ServerConfigurationException($message);
+        }
+
+        // The following will first run the command through printf inside a subshell to mask string literals
+        $ssh_command .= "ssh root@" . $this->settings['ip'] . ' "$(printf \'%q \' ' . $command . ')"';
+        return \shell_exec($ssh_command);
     }
 }
