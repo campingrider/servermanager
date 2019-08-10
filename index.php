@@ -43,14 +43,16 @@
         <header>
             <h1><?php echo $manager->getTitle(); ?></h1>
         </header>
+        <aside id="messages"><?php
+        // TODO: implement in a right manner
+        if (isset($_POST['action']) && isset($_POST['server'])) {
+            echo '<section>';
+            $manager->processAction($_POST['server'], $_POST['action']);
+            echo '<section>';
+        }
+        ?></aside> 
         <main>
             <?php echo $manager->assembleHTML(); ?>
-            <?php
-            // TODO: implement in a right manner
-            if (isset($_POST['action']) && isset($_POST['server'])) {
-                $manager->processAction($_POST['server'], $_POST['action']);
-            }
-            ?>
         </main>
         <footer>  
             <?php
