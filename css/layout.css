@@ -1,0 +1,42 @@
+/* patch box model */
+* {
+  box-sizing: border-box;
+}
+
+/* overall page structure */
+body {
+  margin: 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+body>header {
+  width: 100vw;
+  height: calc(2vh + 5rem);
+  padding: 1vh 1vw;
+  background-color: #999;
+  background-image: linear-gradient(to bottom right, white, silver);
+}
+
+body>main {
+  width: 100vw;
+  min-height: calc(96vh - 6rem);
+  padding: 1vh 1vw;
+}
+
+body>footer {
+  width: 100vw;
+  padding: 1vh 1vw;
+  background-color: black;
+  min-height: calc(2vh + 1rem);
+  font-size: 1rem;
+}
+
+/* header elements */
+body>header h1 {
+  font-size: 3rem;
+  text-align: center;
+  margin: 1rem auto;
+}
+
+/* main elements */
