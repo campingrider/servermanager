@@ -54,11 +54,11 @@
         </main>
         <footer>  
             <?php
-                if (array_key_exists('info', $_GET)) {
-                    echo '<div>';
-                    phpinfo();
-                    echo '</div>';
-                }
+            if (array_key_exists('info', $_GET)) {
+                echo '<div>';
+                phpinfo();
+                echo '</div>';
+            }
             ?>
         </footer>
     </body>

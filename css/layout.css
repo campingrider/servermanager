@@ -7,7 +7,7 @@
 body {
   margin: 0;
   overflow-y: auto;
-  overflow-x: hidden;  
+  overflow-x: hidden;
   background-color: #09F;
   background-image: linear-gradient(to bottom right, #09F, #69C, #969);
   background-attachment: fixed;
