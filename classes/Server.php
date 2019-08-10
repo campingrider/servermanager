@@ -152,8 +152,8 @@ class Server
 
         // TODO: Implement in a right manner
         $html .= '<h2>Ping-Abfrage (Serverstatus)</h2>';
-        $html .= '<pre>Ping-Abfrage aktuell nicht verfügbar.</pre>';
-        // $html .= '<pre>' . shell_exec('ping ' . $this->settings['ip'] . ' -w 1') . '</pre>';
+        // $html .= '<pre>Ping-Abfrage aktuell nicht verfügbar.</pre>';
+        $html .= '<pre>' . shell_exec('ping ' . $this->settings['ip'] . ' -w 1') . '</pre>';
 
         return $html;
     }
@@ -203,6 +203,7 @@ class Server
 
         // assemble command and escape command
         $ssh_command .= "ssh root@" . $this->settings['ip'] . ' ' . \escapeshellarg($command);
+        print_r('>' . $ssh_command . '<');
         return \shell_exec($ssh_command);
     }
 }
