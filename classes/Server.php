@@ -187,7 +187,6 @@ class Server
      * The command is invoked via ssh and executed with root user priviliges. Handle with care.
      *
      * @param string $command The command which shall be executed by the server.
-     * @throws ServerConfigurationException Thrown if either the webserver or the server don't use the bash as shell.
      * @throws NotRunningException Thrown if the server is not running at the moment.
      * @return string The output given by the server
      */
@@ -202,24 +201,8 @@ class Server
             throw new NotRunningException($message);
         }
 
-        if (\shell_exec("echo $0") != '-bash') {
-            $message = 'The machine your server manager is running on does not use bash as shell.';
-            $message .=  ' Sending commands will not be safe as special characters inside the command string can\'t';
-            $message .= ' be escaped safely. The command was not send to prevent damage to your system.';
-            $message .= "\n\r" . 'The machine returned the following for $0: ' . \shell_exec("echo $0");
-            throw new ServerConfigurationException($message);
-        }
-        
-        if (\shell_exec($ssh_command . "'echo $0'") != '-bash') {
-            $message = 'The server is not using bash as shell.';
-            $message .=  ' Sending commands will not be safe as special characters inside the command string can\'t';
-            $message .= ' be escaped safely. The command was not send to prevent damage to your system.';
-            $message .= "\n\r" . 'The server returned the following for $0: ' . \shell_exec($ssh_command . "echo $0");
-            throw new ServerConfigurationException($message);
-        }
-
-        // The following will first run the command through printf inside a subshell to mask string literals
-        $ssh_command .= "ssh root@" . $this->settings['ip'] . ' "$(printf \'%q \' ' . $command . ')"';
+        // assemble command and escape command
+        $ssh_command .= "ssh root@" . $this->settings['ip'] . ' ' . \escapeshellarg($command);
         return \shell_exec($ssh_command);
     }
 }
