@@ -71,13 +71,22 @@
   background-color: #9f9;
   background-image: linear-gradient(to bottom right, white, silver, white, #c0ffc0);
 }
+.server.status-listening>header>img {
+  filter: invert(.5) sepia(1) saturate(80) hue-rotate(100deg);
+}
 
 .server.status-running {
   background-color: #ff9;
   background-image: linear-gradient(to bottom right, white, silver, white, #ffffc0);
 }
+.server.status-running>header>img {
+  filter: invert(.5) sepia(1) saturate(5) hue-rotate(20deg);
+}
 
 .server.status-off {
   background-color: #f99;
   background-image: linear-gradient(to bottom right, white, silver, white, #ffc0c0);
+}
+.server.status-off>header>img {
+  filter: invert(.5) sepia(1) saturate(80) hue-rotate(40deg);
 }
