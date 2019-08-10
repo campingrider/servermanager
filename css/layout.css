@@ -6,16 +6,18 @@
 /* overall page structure */
 body {
   margin: 0;
+  min-height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
   background-color: #09F;
   background-image: linear-gradient(to bottom right, #09F, #69C, #969);
   background-attachment: fixed;
+  display: grid;
+  grid-template-columns: 100vw;
+  grid-template-rows: min-content auto min-content;
 }
 
 body>header {
-  width: 100vw;
-  height: calc(2vh + 5rem);
   padding: 1vh 1vw;
   background-color: #999;
   background-image: linear-gradient(to bottom right, white, silver);
@@ -24,7 +26,6 @@ body>header {
 
 body>main {
   width: 100vw;
-  min-height: calc(96vh - 6rem);
   padding: 1vh 1em;
 }
 
@@ -32,7 +33,6 @@ body>footer {
   width: 100vw;
   padding: 1vh 1vw;
   background-color: black;
-  min-height: calc(2vh + 1rem);
   font-size: 1rem;
   box-shadow: 0px 0px 1em black;
 }
