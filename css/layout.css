@@ -10,7 +10,7 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   background-color: #09F;
-  background-image: linear-gradient(to bottom right, #09F, #69C, #969);
+  background-image: linear-gradient(to bottom right, #049, #858);
   background-attachment: fixed;
   display: grid;
   grid-template-columns: 100vw;
