@@ -67,19 +67,22 @@
 }
 
 /* Status-Effekte */
+
 .server.status-listening {
   background-color: #9f9;
+  border-color: #181;
   background-image: linear-gradient(to bottom right, white, silver, white, #c0ffc0);
 }
-.server.status-listening>header>img {
+.server.status-listening>header>form img {
   filter: invert(.5) sepia(1) saturate(80) hue-rotate(100deg);
 }
 
 .server.status-running {
   background-color: #ff9;
+  border-color: #881;
   background-image: linear-gradient(to bottom right, white, silver, white, #ffffc0);
 }
-.server.status-running>header>img {
+.server.status-running>header>form img {
   filter: invert(.5) sepia(1) saturate(5) hue-rotate(20deg);
 }
 
@@ -87,6 +90,7 @@
   background-color: #f99;
   background-image: linear-gradient(to bottom right, white, silver, white, #ffc0c0);
 }
-.server.status-off>header>img {
+.server.status-off>header>form img {
+  border-color: #811;
   filter: invert(.5) sepia(1) saturate(80) hue-rotate(40deg);
 }

@@ -178,7 +178,7 @@ class Server
         
         $html .= "</header>";
 
-        $html .= '<p style="text-align: center;">' . $img . ' Serverstatus: ' . $text . ' ' . $img;
+        $html .= '<p style="text-align: center;"> Serverstatus: ' . $text;
 
         $html .= '</p>';
         $html .= '</section>';
