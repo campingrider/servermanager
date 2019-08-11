@@ -27,7 +27,12 @@ body>header {
 
 #messages {
   grid-row: 2 / auto;
-  padding: 1em;
+  padding: 1ex;
+  background-color: #999;
+  background-image: linear-gradient(to bottom right, white, silver);
+  border: 0.5ex outset #777;
+  margin-top: 1ex;
+  width:100vw;
 }
 
 #messages:empty {
@@ -75,5 +80,10 @@ body>main>section {
   body>main>section {
     width: 29em;
     margin: 0.5em;
+  }
+
+  #messages {
+    width: auto;
+    margin: 1em;
   }
 }

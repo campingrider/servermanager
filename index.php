@@ -33,6 +33,7 @@
         <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
         <link rel="stylesheet" href="css/layout.css" type="text/css">
         <link rel="stylesheet" href="css/servers.css" type="text/css">
+        <link rel="stylesheet" href="css/ux-elements.css" type="text/css">
         <title><?php echo $manager->getTitle(); ?> - RIDERs Server Manager</title>
         <!-- 
         This software uses icons from Font-Awesome, http://fontawesome.io, released under SIL OFL 1.1.

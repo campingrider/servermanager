@@ -1,0 +1,11 @@
+/* messages */
+#messages::before {
+  content: ' ';
+  background-image: url(../svg/info-circle.svg), radial-gradient(#ff0, transparent 75%);
+  background-size: cover;
+  background-blend-mode: saturation;
+  display: block;
+  width: 3em;
+  height: 3em;
+  float: right;
+}
