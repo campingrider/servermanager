@@ -73,8 +73,8 @@
   border-color: #181;
   background-image: linear-gradient(to bottom right, white, silver, white, #c0ffc0);
 }
-.server.status-listening>header>form img {
-  filter: invert(.5) sepia(1) saturate(80) hue-rotate(100deg);
+.server.status-listening>header>form img {  
+  background-image: radial-gradient(#c0ffc0, transparent);
 }
 
 .server.status-running {
@@ -83,14 +83,14 @@
   background-image: linear-gradient(to bottom right, white, silver, white, #ffffc0);
 }
 .server.status-running>header>form img {
-  filter: invert(.5) sepia(1) saturate(5) hue-rotate(20deg);
+  background-image: radial-gradient(#ffffc0, transparent);
 }
 
 .server.status-off {
   background-color: #f99;
+  border-color: #811;
   background-image: linear-gradient(to bottom right, white, silver, white, #ffc0c0);
 }
-.server.status-off>header>form img {
-  border-color: #811;
-  filter: invert(.5) sepia(1) saturate(80) hue-rotate(40deg);
+.server.status-off>header>form img {  
+  background-image: radial-gradient(#ffc0c0, transparent);
 }
