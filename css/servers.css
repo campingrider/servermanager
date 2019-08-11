@@ -73,6 +73,9 @@
   border-color: #181;
   background-image: linear-gradient(to bottom right, white, silver, white, #c0ffc0);
 }
+.server.status-listening>header {
+  border-bottom-color: #181;
+}
 .server.status-listening>header>form img {  
   background-image: radial-gradient(#c0ffc0, transparent);
 }
@@ -82,6 +85,9 @@
   border-color: #881;
   background-image: linear-gradient(to bottom right, white, silver, white, #ffffc0);
 }
+.server.status-running>header {
+  border-bottom-color: #881;
+}
 .server.status-running>header>form img {
   background-image: radial-gradient(#ffffc0, transparent);
 }
@@ -90,6 +96,9 @@
   background-color: #f99;
   border-color: #811;
   background-image: linear-gradient(to bottom right, white, silver, white, #ffc0c0);
+}
+.server.status-off>header {
+  border-bottom-color: #811;
 }
 .server.status-off>header>form img {  
   background-image: radial-gradient(#ffc0c0, transparent);
