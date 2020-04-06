@@ -76,12 +76,11 @@ body>main>section {
   margin-bottom: 0.5em;
 }
 
-@media (min-width: 30em) {
-  body>main>section {
-    width: 29em;
-    margin: 0.5em;
-  }
+body>main img {
+  width: 2em;
+}
 
+@media (min-width: 30em) {
   #messages {
     width: auto;
     margin: 1em;

@@ -124,6 +124,20 @@ class Server
             file_put_contents($settings_path, $content);
         }
 
+        $this->loadServices();
+    }
+
+     /**
+     * Load all Services from the servers directory.
+     *
+     * @throws NotFoundException Thrown if the directory is not found at the given location.
+     *
+     * @return void
+     */
+    private function loadServices()
+    {
+        $dir_path = $this->getDirPath();
+
         // traverse the server directory and create service objects.
         if (is_dir($dir_path) && $handle = opendir($dir_path)) {
             while (false !== ($entry = readdir($handle))) {
@@ -138,6 +152,7 @@ class Server
         } else {
             throw new NotFoundException("Directory $dir_path not found!");
         }
+        ksort($this->services, SORT_NATURAL);
     }
 
     /**
@@ -165,6 +180,15 @@ class Server
     public function getTitle()
     {
         return $this->settings['title'];
+    }
+
+    /**
+     * Creates a globally unique identifier for this service
+     */
+    public function getUniqueIdentifier()
+    {
+        $id = $this->server_id;
+        return $id;
     }
 
     /**
@@ -201,7 +225,8 @@ class Server
         }
 
         $html = '';
-        $html .= '<section class="server ' . $short . '">';
+        $html .= '<section class="panel server ' . $short . '"';
+        $html .= ' id="server-'.$this->getUniqueIdentifier().'">';
         $html .= "<header>";
         
         $html .= '<img src="./svg/server.svg" alt="Server: ">';

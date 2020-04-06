@@ -134,8 +134,8 @@ class Manager
      */
     private function addServer($server_id, $settings_string = "")
     {
-        if (preg_match('/[^a-z0-9_.@]/', $server_id)) {
-            throw new InvalidArgumentException("The server id may only contain characters a-z, 0-9, _, . or @ and '$server_id' did not match this restriction.");
+        if (preg_match('/[^a-z0-9_-]/', $server_id)) {
+            throw new InvalidArgumentException("The server id may only contain characters a-z, 0-9, - or _ and '$server_id' did not match this restriction.");
         }
 
         $dir_path = $this->getServerDirPath();
@@ -189,6 +189,7 @@ class Manager
         } else {
             throw new NotFoundException("Directory $dir_path not found!");
         }
+        ksort($this->servers, SORT_NATURAL);
     }
 
     /**

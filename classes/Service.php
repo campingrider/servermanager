@@ -121,6 +121,15 @@ class Service
         return $this->settings['title'];
     }
 
+    /**
+     * Creates a globally unique identifier for this service
+     */
+    public function getUniqueIdentifier()
+    {
+        $id = $this->service_id . '-' . $this->server->getUniqueIdentifier();
+        return $id;
+    }
+
      /**
      * Creates the HTML representing the service in the list of services
      *
@@ -129,8 +138,14 @@ class Service
     public function assembleListEntry()
     {
         $html = ''; 
-        $html .= '<li>';       
+        $html .= '<li>';
+        $html .= '<a href="#service-'.$this->getUniqueIdentifier().'">';
+        $html .= '<img src="./svg/gears.svg" alt="Service: ">';
+        $html .= '<span>';       
         $html .= $this->getTitle();
+        $html .= '</span>';
+        $html .= '<img src="./svg/caret-down.svg" alt=" - linked here!">';
+        $html .= '</a>';
         $html .= '</li>';
 
         return $html;

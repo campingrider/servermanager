@@ -1,0 +1,87 @@
+.panel {
+  background-color: #999;
+  background-image: linear-gradient(to bottom right, white, silver);
+  border: 0.5ex outset #777;
+}
+
+@media (min-width: 30em) {
+  .panel {
+    width: 29em;
+    margin: 0.5em;
+  }
+}
+
+@media (min-width: 90em) {
+  .panel {
+    width: 44em;
+    margin: 0.5em;
+  }
+}
+
+/* gruppierende Elemente */
+
+.panel>* {
+  padding: 0.5ex;
+}
+
+/* header und header-Action-Button */
+
+.panel>header {
+border-bottom: 0.3ex solid black;
+  margin-bottom: 0.5ex;
+  background-image: linear-gradient(to top, white, silver);
+  display:grid;
+  grid-template-rows: 3em 1fr;
+  grid-template-columns: 3em 1fr 3em;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel>header>h1 {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+  text-align: center;
+  font-size: 2em;
+  grid-column: 1 / span 3;
+  grid-row: 2 / auto;
+}
+
+.panel>header img {
+  width: 2.5em;
+}
+
+.panel>header>img {
+  grid-column: 1 / auto;
+  grid-row: 1 / auto;
+  margin: auto;
+}
+
+.panel>header>form {
+  grid-column: 3 / auto;
+  grid-row: 1 / auto;
+  margin: auto;
+}
+
+.panel>header>form>button {
+  padding: 0;
+}
+
+@media (min-width: 25em) {
+  .panel>header {
+    grid-template-rows: 1fr;
+    grid-template-columns: 3em 1fr 3em;
+    justify-content: space-around;
+    justify-content: space-evenly;
+  }
+
+  .panel>header>h1 {
+    grid-row: 1 / auto;
+    grid-column: 2 / auto;
+  }
+}
+
+/* Statusmeldungen */
+
+.panel>p {
+  text-align: center;
+}
