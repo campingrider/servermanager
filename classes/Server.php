@@ -13,6 +13,7 @@ namespace campingrider\servermanager;
 use campingrider\servermanager\exceptions\NotFoundException as NotFoundException;
 use campingrider\servermanager\exceptions\ServerConfigurationException as ServerConfigurationException;
 use campingrider\servermanager\exceptions\NotRunningException as NotRunningException;
+use campingrider\servermanager\exceptions\UnexpectedStateException as UnexpectedStateException;
 
 /**
  * Class for representing and managing a single server machine
@@ -31,8 +32,9 @@ class Server
      */
     private static $settings_descriptions = array(
         'title'       => 'The following phrase is shown as a title for the server',
-        'mac_address' => 'The MAC Address of the server, used for starting the server via wake on lan',
+        'mac_address' => 'The MAC Address of the server, used for starting the server via wake on lan. If not set there will be no start/stop button.',
         'ip'          => 'The IP Address of the server, used for connecting via ssh, ping etc.',
+        'user'        => 'The server user which can be logged in via ssh (no login via password, only via key file!)'
     );
 
     /**
@@ -46,6 +48,7 @@ class Server
         'title'       => 'Title for server not configured yet',
         'mac_address' => '',
         'ip'          => '',
+        'user'        => 'root'
     );
 
     /**
@@ -105,7 +108,7 @@ class Server
 
         // write ini with newer version if ini was not complete.
         if ($write_ini) {
-            $content = "; Settings for server with id $server_id. Adjust to your needs.";
+            $content = "; Settings for server with id $server_id. Adjust to your needs. Caution: Syntax errors and other breaking changes might result in the whole file being overwritten by default values! You may want to backup this file before changing.";
             $content .= "\n; ------------------------------ \n\n";
             foreach ($this->settings as $setting_id => $value) {
                 if (isset(Server::$settings_descriptions[ $setting_id ])) {
@@ -171,9 +174,14 @@ class Server
         $html .= '<form action="" method="POST">';
         $html .= '<input type="hidden" name="server" value="' . $this->server_id . '">';
         $html .= '<input type="hidden" name="action" value="powerbutton">';
-        $html .= '<button type="submit" title="An-/Abschalten">';
-        $html .= '<img src="./svg/power-off.svg" alt="An-/Abschalten!">';
-        $html .= '</button>';
+
+        // only add powerbutton if this server can be started via wakeonlan
+        if (!empty($this->settings['mac_address'])) {
+            $html .= '<button type="submit" title="An-/Abschalten">';
+            $html .= '<img src="./svg/power-off.svg" alt="An-/Abschalten!">';
+            $html .= '</button>';
+        }
+
         $html .= '</form>';
         
         $html .= "</header>";
@@ -189,23 +197,27 @@ class Server
     // TODO: implement in a right manner
     public function processAction($action, ...$params)
     {
-        if ("powerbutton" == $action) {
-            try {
-                $shellreturn = $this->exec('shutdown -h now');
-                echo 'sent shutdown command to server; shutting down.';
-            } catch (NotRunningException $e) {
-                $wakecommand = 'wakeonlan ' . $this->settings['mac_address'];
-                $shellreturn = shell_exec($wakecommand);
-                echo 'executed ' . $wakecommand;
-                echo 'got in return: <pre>' . $shellreturn . '</pre>';
+        if ($action == "powerbutton") {
+            if (!empty($this->settings('mac_address'))) {
+                try {
+                    $shellreturn = $this->exec('shutdown -h now');
+                    echo 'sent shutdown command to server; shutting down.';
+                } catch (NotRunningException $e) {
+                    $wakecommand = 'wakeonlan ' . $this->settings['mac_address'];
+                    $shellreturn = shell_exec($wakecommand);
+                    echo 'executed ' . $wakecommand;
+                    echo 'got in return: <pre>' . $shellreturn . '</pre>';
+                } finally {
+                    echo 'received call for action, will reload page in 20 seconds';
+
+                    echo '<script>window.setTimeout(function() {
+                        let loc = window.location.protocol + "//" + window.location.host + window.location.pathname; 
+                        window.location.replace(loc); 
+                    }, 20000);</script>';
+                }
+            } else {
+                throw new NotFoundException('The server could not be shut down / started because there was no mac adress configured!');
             }
-
-            echo 'received call for action, will reload page in 20 seconds';
-
-            echo '<script>window.setTimeout(function() {
-                let loc = window.location.protocol + "//" + window.location.host + window.location.pathname; 
-                window.location.replace(loc); 
-            }, 20000);</script>';
         }
     }
 
@@ -221,7 +233,7 @@ class Server
     private function exec($command)
     {
         // prepare ssh call
-        $ssh_command = "ssh root@" . $this->settings['ip'];
+        $ssh_command = "ssh ".$this->settings['user']."@" . $this->settings['ip'];
 
         // try to call the server in order to ensure it is running
         if (strlen(\shell_exec($ssh_command)) === 0) {
@@ -272,6 +284,7 @@ class Server
         } catch (NotRunningException $e) {
             // try whether server responds to ping
             if ($this->getLostPingPercentage() < 100) {
+                // TODO: ping-aufrufe vermeiden
                 return Server::STATUS_RUNNING;
             } else {
                 return Server::STATUS_OFF;

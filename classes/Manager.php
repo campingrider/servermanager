@@ -12,6 +12,7 @@ namespace campingrider\servermanager;
 
 use \InvalidArgumentException as InvalidArgumentException;
 use campingrider\servermanager\exceptions\NotFoundException as NotFoundException;
+use campingrider\servermanager\exceptions\UnexpectedStateException as UnexpectedStateException;
 
 /**
  * This class contains overall settings and controls the behavior of the system.
@@ -38,7 +39,8 @@ class Manager
         'banner_path'     => 'The following path points to the banner image',
         'server_dir_path' => 'Path to the directory containing the configuration directories of all the servers',
         'users_path'      => 'The following path points to the file where user info is stored',
-        'groups_path'     => 'The following path points to the file where group info is stored'
+        'groups_path'     => 'The following path points to the file where group info is stored',
+        'add_localhost'   => '"off": Don\'t add localhost as manageable server, "on": Automatically add localhost as manageable server. When turning off this setting, the server-directory for localhost needs to be removed.'
     );
 
     /**
@@ -53,7 +55,8 @@ class Manager
         'banner_path'     => 'no_path.png',
         'server_dir_path' => './servers',
         'users_path'      => './custom/users.ini',
-        'groups_path'      => './custom/groups.ini'
+        'groups_path'     => './custom/groups.ini',
+        'add_localhost'   => 'off'
     );
 
     /**
@@ -105,7 +108,7 @@ class Manager
 
         // write ini with newer version if ini was not complete.
         if ($write_ini) {
-            $content = "; General settings. Adjust to your needs.\n; ------------------------------ \n\n";
+            $content = "; General settings. Adjust to your needs. Caution: Syntax errors and other breaking changes might result in the whole file being overwritten by default values! You may want to backup this file before changing.\n; ------------------------------ \n\n";
             foreach ($this->settings as $setting_id => $value) {
                 if (isset(Manager::$settings_descriptions[ $setting_id ])) {
                     $content .= '; ' . Manager::$settings_descriptions[ $setting_id ] . "\n";
@@ -121,6 +124,40 @@ class Manager
     }
 
     /**
+     * Add a new Server to the directory configured by settings.
+     *
+     * @throws NotFoundException Thrown if the directory is not found at the given location.
+     * @throws InvalidArgumentException Thrown if the server id does contain invalid characters.
+     * @throws UnexpectedStateException Thrown if a server with this id already exists or the creation of the service failed for another reason.
+     *
+     * @return void
+     */
+    private function addServer($server_id, $settings_string = "")
+    {
+        if (preg_match('/[^a-z0-9_.@]/', $server_id)) {
+            throw new InvalidArgumentException("The server id may only contain characters a-z, 0-9, _, . or @ and '$server_id' did not match this restriction.");
+        }
+
+        $dir_path = $this->getServerDirPath();
+
+        if (is_dir($dir_path)) {
+            $server_dir = $dir_path . '/' . $server_id;
+            $not_already_there = !is_dir($server_dir);
+            if ($not_already_there && mkdir($server_dir)) {
+                $server_settings_path = $server_dir . '/' . 'settings.ini';
+                file_put_contents($server_settings_path,$settings_string);
+            } else {
+                throw new UnexpectedStateException("The directory $server_dir does already exist or could not be created.");
+            }
+        } else {
+            throw new NotFoundException("Directory $dir_path not found!");
+        }
+
+
+
+    }
+
+    /**
      * Load all Servers from the directory configured by settings.
      *
      * @throws NotFoundException Thrown if the directory is not found at the given location.
@@ -131,6 +168,15 @@ class Manager
     {
         $dir_path = $this->getServerDirPath();
 
+        // automatically add localhost if configured this way
+        if ($this->settings['add_localhost'] == 'on') {
+            try {
+                $this->addServer('localhost', 'title = "localhost"' . "\n" . 'ip = "127.0.0.1"');
+            } catch(UnexpectedStateException $e) {
+                // do nothing - localhost might already be added
+            }
+        }
+            
         // traverse the server config directory and create server objects.
         if (is_dir($dir_path) && $handle = opendir($dir_path)) {
             while (false !== ($entry = readdir($handle))) {
