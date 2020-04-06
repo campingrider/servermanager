@@ -248,9 +248,6 @@ class Server
         
         $html .= "</header>";
 
-        $html .= '<p> Serverstatus: ' . $text;
-        $html .= '</p>';
-
         if (!empty($this->services)) {
             $html .= '<ul class="services">';
             foreach ($this->services as $sid => $service) {
@@ -258,6 +255,13 @@ class Server
             }
             $html .= '</ul>';
         }
+
+        $html .= '<footer>';
+        
+        $html .= '<p> Serverstatus: ' . $text;
+        $html .= '</p>';
+        
+        $html .= '<footer>';
 
         $html .= '</section>';
 

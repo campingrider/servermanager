@@ -61,20 +61,7 @@ body>header h1 {
   margin: 1rem auto;
 }
 
-/* main elements and main positioning */
-body>main {  
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  justify-content: space-evenly;
-  align-items: center;
-}
-
-body>main>section {
-  width: 100vw;
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-}
+/* mixed rules */
 
 body>main img {
   width: 2em;

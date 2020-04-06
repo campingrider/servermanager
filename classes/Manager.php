@@ -223,9 +223,13 @@ class Manager
     public function assembleHTML()
     {
         $html = '';
+        $html .= '<section id="servers" class="panel-container">';
         foreach ($this->servers as $server) {
             $html .= $server->assembleHTML();
         }
+        $html .= '</section>';
+        $html .= '<section id="services" class="panel-container">';
+        $html .= '</section>';
         return $html;
     }
 

@@ -2,9 +2,10 @@
 
 ul.services {
   text-align: center;
-  margin: 0.5em 0.5em;
+  margin: auto;
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-around;
   justify-content: space-evenly;
   align-items: center;
 }
@@ -12,13 +13,17 @@ ul.services {
 ul.services>li {
   list-style-type: none;
   display: block;
+  margin: 0.5ex;
+  flex-basis: 7em;
+  flex-grow: 1;
+  flex-shrink: 1;
 }
 
 ul.services>li>a {
   display:grid;
-  font-size: 2em;
-  grid-template-rows: 1.25em 1fr;
-  grid-template-columns: 1.25em 1fr 1.25em;
+  font-size: 1.5em;
+  grid-template-rows: 1.5em 1fr;
+  grid-template-columns: 1.5em 1fr 1.5em;
   text-decoration: none;
   color: black;
   background-color: #999;
@@ -35,15 +40,27 @@ ul.services a>img {
   width: 1em;
 }
 
+ul.services a>img:first-of-type {
+  grid-column: 1 / auto;
+  grid-row: 1 / auto;
+}
+
 ul.services a>span {
   grid-column: 1 / span 3;
   grid-row: 2 / auto;
+  padding: 0 0.5ex;
+}
+
+ul.services a>img:last-of-type {
+  grid-column: 3 / auto;
+  grid-row: 1 / auto;
+  margin: auto;
 }
 
 @media (min-width: 25em) {
   ul.services>li>a {
     grid-template-rows: 1fr;
-    grid-template-columns: 1.25em 1fr 1.25em;
+    grid-template-columns: 1.5em 1fr 1.5em;
     justify-content: space-around;
     justify-content: space-evenly;
   }
@@ -61,8 +78,8 @@ ul.services a>span {
   border-color: #181;
   background-image: linear-gradient(to bottom right, white, silver, white, #c0ffc0);
 }
-.server.status-listening>header {
-  border-bottom-color: #181;
+.server.status-listening>header, .server.status-listening>footer {
+  border-color: #181;
 }
 .server.status-listening>header>form img {  
   background-image: radial-gradient(#c0ffc0, transparent);
@@ -73,8 +90,8 @@ ul.services a>span {
   border-color: #881;
   background-image: linear-gradient(to bottom right, white, silver, white, #ffffc0);
 }
-.server.status-running>header {
-  border-bottom-color: #881;
+.server.status-running>header, .server.status-running>footer {
+  border-color: #881;
 }
 .server.status-running>header>form img {
   background-image: radial-gradient(#ffffc0, transparent);
@@ -85,8 +102,8 @@ ul.services a>span {
   border-color: #811;
   background-image: linear-gradient(to bottom right, white, silver, white, #ffc0c0);
 }
-.server.status-off>header {
-  border-bottom-color: #811;
+.server.status-off>header, .server.status-off>footer {
+  border-color: #811;
 }
 .server.status-off>header>form img {  
   background-image: radial-gradient(#ffc0c0, transparent);
