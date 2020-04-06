@@ -66,6 +66,22 @@
   }
 }
 
+/* Statusmeldungen */
+
+.server>p {
+  text-align: center;
+}
+
+/* Service-Liste */
+
+ul.services {
+  text-align: center;
+}
+
+ul.services li {
+  list-style-type: none;
+}
+
 /* Status-Effekte */
 
 .server.status-listening {

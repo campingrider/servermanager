@@ -66,6 +66,13 @@ class Server
     private $server_id;
 
     /**
+     * The services running on this server.
+     *
+     * @var Service[] $services;
+     */
+    private $services;
+
+    /**
      * Constructor.
      *
      * Loads server configuration from the servers directory, specified by its id.
@@ -78,21 +85,19 @@ class Server
     {
         $this->manager = $manager;
         $this->server_id = $server_id;
+        $this->services = array();
 
         $loaded_settings = array();
 
-        $dir_path = $this->manager->getServerDirPath() . '/' . $server_id;
+        // getDirPath may throw NotFoundException
+        $dir_path = $this->getDirPath();
         $settings_path = $dir_path . '/settings.ini';
 
         // load settings from file.
-        if (is_dir($dir_path)) {
-            if (is_file($settings_path)) {
-                $loaded_settings = parse_ini_file($settings_path);
-            } else {
-                throw new NotFoundException("File $settings_path not found!");
-            }
+        if (is_file($settings_path)) {
+            $loaded_settings = parse_ini_file($settings_path);
         } else {
-            throw new NotFoundException("Directory $dir_path not found!");
+            throw new NotFoundException("File $settings_path not found!");
         }
 
         // overwrite default settings with loaded settings.
@@ -118,6 +123,38 @@ class Server
             }
             file_put_contents($settings_path, $content);
         }
+
+        // traverse the server directory and create service objects.
+        if (is_dir($dir_path) && $handle = opendir($dir_path)) {
+            while (false !== ($entry = readdir($handle))) {
+                // only create an object for ini files
+                if ($entry != '.' && $entry != '..' && is_file($dir_path . '/' . $entry)) {
+                    if (preg_match('/^(.+)\.service\.ini$/', $entry, $service_id)) {
+                        $this->services[$service_id[1]] = new Service($this, $service_id[1]);
+                    }
+                }
+            }
+            closedir($handle);
+        } else {
+            throw new NotFoundException("Directory $dir_path not found!");
+        }
+    }
+
+    /**
+     * Getter for the path to the directory.
+     *
+     * @throws NotFoundException Thrown if the directory is not at the expected location.
+     * @return string The path to the directory.
+     */
+    public function getDirPath()
+    {
+        $dir_path = $this->manager->getServerDirPath() . '/' . $this->server_id;
+
+        if (!is_dir($dir_path)) {
+            throw new NotFoundException("Directory $dir_path not found!");
+        }
+
+        return $dir_path;
     }
 
     /**
@@ -130,7 +167,7 @@ class Server
         return $this->settings['title'];
     }
 
-     /**
+    /**
      * Creates the HTML representing the server.
      *
      * Contains the HTML created by the corresponding methods of the provided services.
@@ -186,9 +223,17 @@ class Server
         
         $html .= "</header>";
 
-        $html .= '<p style="text-align: center;"> Serverstatus: ' . $text;
-
+        $html .= '<p> Serverstatus: ' . $text;
         $html .= '</p>';
+
+        if (!empty($this->services)) {
+            $html .= '<ul class="services">';
+            foreach ($this->services as $sid => $service) {
+                $html .= $service->assembleListEntry();
+            }
+            $html .= '</ul>';
+        }
+
         $html .= '</section>';
 
         return $html;
@@ -279,7 +324,7 @@ class Server
     private function getStatus()
     {
         try {
-            $this->exec('');
+            $this->exec('cat /etc/issue');
             return Server::STATUS_LISTENING;
         } catch (NotRunningException $e) {
             // try whether server responds to ping
