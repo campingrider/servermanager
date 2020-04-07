@@ -27,18 +27,18 @@ class IniSettings {
   private $descriptions = array();
 
   /**
-   * Internal storage for all settings.
-   *
-   * @var string[] $settings
-   */
-  private $settings = array();
-
-  /**
    * Path to the ini file to read/write settings
    *
    * @var string $ini_path
    */
   private $ini_path = "";
+
+  /**
+   * Internal storage for all settings.
+   *
+   * @var string[] $settings
+   */
+  private $settings = array();
 
   /**
    * Timestamp when the settings have been read the last time

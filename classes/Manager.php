@@ -24,13 +24,6 @@ class Manager
 {
 
     /**
-     * Security handler working for this manager.
-     *
-     * @var security\Doorman doorman
-     */
-    private $doorman;
-
-    /**
      * Contains description for all settings which can be written out to an ini file.
      *
      * @var string[] $settings_descriptions
@@ -59,11 +52,11 @@ class Manager
     );
 
     /**
-     * The settings object managing all settings for this server manager.
-     * 
-     * @var IniSettings $settings
+     * Security handler working for this manager.
+     *
+     * @var security\Doorman doorman
      */
-    private $settings = null;
+    private $doorman;
 
     /**
      * Array of all the servers managed by this manager.
@@ -71,6 +64,13 @@ class Manager
      * @var Server[] $servers
      */
     private $servers = array();
+
+    /**
+     * The settings object managing all settings for this server manager.
+     * 
+     * @var IniSettings $settings
+     */
+    private $settings = null;
 
     /**
      * Constructor.
@@ -120,6 +120,83 @@ class Manager
     }
 
     /**
+     * Creates the HTML representing the server manager.
+     *
+     * Contains the HTML created by the corresponding methods of the managed servers.
+     * Provides overall information and functionality.
+     *
+     * @return string The assembled HTML code.
+     */
+    public function assembleHTML()
+    {
+        $html = '';
+        $html .= '<section id="servers" class="panel-container">';
+        foreach ($this->servers as $server) {
+            $html .= $server->assembleHTML();
+        }
+        $html .= '</section>';
+        $html .= '<section id="services" class="panel-container">';
+        $html .= '</section>';
+        return $html;
+    }
+
+    /**
+     * Evaluates the current Path relative to the root of the application.
+     *
+     * Internally, $_SERVER['REQUEST_URI'] is used, so if that is not available, the app will not be able to run.
+     *
+     * @throws \Exception Thrown if $_SERVER doesn't contain necessary information.
+     *
+     * @return string Path from root of application to current page.
+     */
+    public function getCurrentPath()
+    {
+        $prefix = $this->getPathPrefix();
+        $curPath = substr($_SERVER['REQUEST_URI'], strlen($prefix));
+        return $curPath;
+    }
+
+    /**
+     * Evaluates the Path to the root of the application.
+     *
+     * Internally, $_SERVER['SCRIPT_NAME'] is used, so if that is not available, the app will not be able to run.
+     *
+     * @throws \Exception Thrown if $_SERVER doesn't contain necessary information.
+     *
+     * @return string Path from domain to root of application.
+     */
+    private function getPathPrefix()
+    {
+        if (!isset($_SERVER['SCRIPT_NAME'])) {
+            throw new Exception('Failure: Can not determine SCRIPT_NAME.');
+        }
+
+        $prefix = substr($_SERVER['SCRIPT_NAME'], 0, -10);
+
+        return $prefix;
+    }
+
+    /**
+     * Getter for the path of the directory containing the server configuration directories.
+     *
+     * @return string path of the directory containing the server configuration directories.
+     */
+    public function getServerDirPath()
+    {
+        return $this->settings->get('server_dir_path');
+    }
+
+    /**
+     * Getter for the title of the manager.
+     *
+     * @return string title of the manager
+     */
+    public function getTitle()
+    {
+        return $this->settings->get('title');
+    }
+
+    /**
      * Load all Servers from the directory configured by settings.
      *
      * @throws NotFoundException Thrown if the directory is not found at the given location.
@@ -152,83 +229,6 @@ class Manager
             throw new NotFoundException("Directory $dir_path not found!");
         }
         ksort($this->servers, SORT_NATURAL);
-    }
-
-    /**
-     * Getter for the title of the manager.
-     *
-     * @return string title of the manager
-     */
-    public function getTitle()
-    {
-        return $this->settings->get('title');
-    }
-
-    /**
-     * Getter for the path of the directory containing the server configuration directories.
-     *
-     * @return string path of the directory containing the server configuration directories.
-     */
-    public function getServerDirPath()
-    {
-        return $this->settings->get('server_dir_path');
-    }
-
-    /**
-     * Creates the HTML representing the server manager.
-     *
-     * Contains the HTML created by the corresponding methods of the managed servers.
-     * Provides overall information and functionality.
-     *
-     * @return string The assembled HTML code.
-     */
-    public function assembleHTML()
-    {
-        $html = '';
-        $html .= '<section id="servers" class="panel-container">';
-        foreach ($this->servers as $server) {
-            $html .= $server->assembleHTML();
-        }
-        $html .= '</section>';
-        $html .= '<section id="services" class="panel-container">';
-        $html .= '</section>';
-        return $html;
-    }
-
-    /**
-     * Evaluates the Path to the root of the application.
-     *
-     * Internally, $_SERVER['SCRIPT_NAME'] is used, so if that is not available, the app will not be able to run.
-     *
-     * @throws \Exception Thrown if $_SERVER doesn't contain necessary information.
-     *
-     * @return string Path from domain to root of application.
-     */
-    private function getPathPrefix()
-    {
-        if (!isset($_SERVER['SCRIPT_NAME'])) {
-            throw new Exception('Failure: Can not determine SCRIPT_NAME.');
-        }
-
-        $prefix = substr($_SERVER['SCRIPT_NAME'], 0, -10);
-
-        return $prefix;
-    }
-
-    /**
-     * Evaluates the current Path relative to the root of the application.
-     *
-     * Internally, $_SERVER['REQUEST_URI'] is used, so if that is not available, the app will not be able to run.
-     *
-     * @throws \Exception Thrown if $_SERVER doesn't contain necessary information.
-     *
-     * @return string Path from root of application to current page.
-     */
-    public function getCurrentPath()
-    {
-        $prefix = $this->getPathPrefix();
-        $curPath = substr($_SERVER['REQUEST_URI'], strlen($prefix));
-        return $curPath;
     }
 
     // TODO: implement in a right manner

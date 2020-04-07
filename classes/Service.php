@@ -86,6 +86,20 @@ class Service
         $this->settings = new IniSettings($settings_path, Service::$settings_default, Service::$settings_descriptions);
     }
 
+    const STATUS_OFF = 0;
+    const STATUS_RUNNING = 1;
+    const STATUS_LISTENING = 2;
+    
+    /**
+     * Determines whether the service is running.
+     *
+     * @return int Integer describing current service status.
+     */
+    private function getStatus()
+    {
+        return Service::STATUS_OFF;
+    }
+
     /**
      * Getter for the title of the service.
      *
@@ -124,19 +138,5 @@ class Service
         $html .= '</li>';
 
         return $html;
-    }
-
-    const STATUS_OFF = 0;
-    const STATUS_RUNNING = 1;
-    const STATUS_LISTENING = 2;
-    
-    /**
-     * Determines whether the service is running.
-     *
-     * @return int Integer describing current service status.
-     */
-    private function getStatus()
-    {
-        return Service::STATUS_OFF;
     }
 }

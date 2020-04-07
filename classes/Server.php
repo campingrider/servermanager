@@ -52,13 +52,6 @@ class Server
     );
 
     /**
-     * The settings object managing all settings for this server.
-     * 
-     * @var IniSettings $settings
-     */
-    private $settings = null;
-
-    /**
      * The parental server manager managing this server.
      *
      * @var Manager $manager
@@ -78,6 +71,13 @@ class Server
      * @var Service[] $services;
      */
     private $services = array();
+
+    /**
+     * The settings object managing all settings for this server.
+     * 
+     * @var IniSettings $settings
+     */
+    private $settings = null;
 
     /**
      * Constructor.
@@ -100,70 +100,6 @@ class Server
         $this->settings = new IniSettings($settings_path, Server::$settings_default, Server::$settings_descriptions);
 
         $this->loadServices();
-    }
-
-     /**
-     * Load all Services from the servers directory.
-     *
-     * @throws NotFoundException Thrown if the directory is not found at the given location.
-     *
-     * @return void
-     */
-    private function loadServices()
-    {
-        $dir_path = $this->getDirPath();
-
-        // traverse the server directory and create service objects.
-        if (is_dir($dir_path) && $handle = opendir($dir_path)) {
-            while (false !== ($entry = readdir($handle))) {
-                // only create an object for ini files
-                if ($entry != '.' && $entry != '..' && is_file($dir_path . '/' . $entry)) {
-                    if (preg_match('/^(.+)\.service\.ini$/', $entry, $service_id)) {
-                        $this->services[$service_id[1]] = new Service($this, $service_id[1]);
-                    }
-                }
-            }
-            closedir($handle);
-        } else {
-            throw new NotFoundException("Directory $dir_path not found!");
-        }
-        ksort($this->services, SORT_NATURAL);
-    }
-
-    /**
-     * Getter for the path to the directory.
-     *
-     * @throws NotFoundException Thrown if the directory is not at the expected location.
-     * @return string The path to the directory.
-     */
-    public function getDirPath()
-    {
-        $dir_path = $this->manager->getServerDirPath() . '/' . $this->server_id;
-
-        if (!is_dir($dir_path)) {
-            throw new NotFoundException("Directory $dir_path not found!");
-        }
-
-        return $dir_path;
-    }
-
-    /**
-     * Getter for the title of the server.
-     *
-     * @return string title of the server
-     */
-    public function getTitle()
-    {
-        return $this->settings->get('title');
-    }
-
-    /**
-     * Creates a globally unique identifier for this service
-     */
-    public function getUniqueIdentifier()
-    {
-        $id = $this->server_id;
-        return $id;
     }
 
     /**
@@ -243,33 +179,6 @@ class Server
         return $html;
     }
 
-    // TODO: implement in a right manner
-    public function processAction($action, ...$params)
-    {
-        if ($action == "powerbutton") {
-            if (!empty($this->settings('mac_address'))) {
-                try {
-                    $shellreturn = $this->exec('shutdown -h now');
-                    echo 'sent shutdown command to server; shutting down.';
-                } catch (NotRunningException $e) {
-                    $wakecommand = 'wakeonlan ' . $this->settings->get('mac_address');
-                    $shellreturn = shell_exec($wakecommand);
-                    echo 'executed ' . $wakecommand;
-                    echo 'got in return: <pre>' . $shellreturn . '</pre>';
-                } finally {
-                    echo 'received call for action, will reload page in 20 seconds';
-
-                    echo '<script>window.setTimeout(function() {
-                        let loc = window.location.protocol + "//" + window.location.host + window.location.pathname; 
-                        window.location.replace(loc); 
-                    }, 20000);</script>';
-                }
-            } else {
-                throw new NotFoundException('The server could not be shut down / started because there was no mac adress configured!');
-            }
-        }
-    }
-
     /**
      * Executes a command on the server.
      *
@@ -293,6 +202,23 @@ class Server
         // assemble command and escape command
         $ssh_command .= ' ' . \escapeshellarg($command);
         return \shell_exec($ssh_command);
+    }
+
+    /**
+     * Getter for the path to the directory.
+     *
+     * @throws NotFoundException Thrown if the directory is not at the expected location.
+     * @return string The path to the directory.
+     */
+    public function getDirPath()
+    {
+        $dir_path = $this->manager->getServerDirPath() . '/' . $this->server_id;
+
+        if (!is_dir($dir_path)) {
+            throw new NotFoundException("Directory $dir_path not found!");
+        }
+
+        return $dir_path;
     }
 
     /**
@@ -341,5 +267,79 @@ class Server
         }
 
         return Server::STATUS_OFF;
+    }
+
+    /**
+     * Getter for the title of the server.
+     *
+     * @return string title of the server
+     */
+    public function getTitle()
+    {
+        return $this->settings->get('title');
+    }
+
+    /**
+     * Creates a globally unique identifier for this service
+     */
+    public function getUniqueIdentifier()
+    {
+        $id = $this->server_id;
+        return $id;
+    }
+
+    /**
+     * Load all Services from the servers directory.
+     *
+     * @throws NotFoundException Thrown if the directory is not found at the given location.
+     *
+     * @return void
+     */
+    private function loadServices()
+    {
+        $dir_path = $this->getDirPath();
+
+        // traverse the server directory and create service objects.
+        if (is_dir($dir_path) && $handle = opendir($dir_path)) {
+            while (false !== ($entry = readdir($handle))) {
+                // only create an object for ini files
+                if ($entry != '.' && $entry != '..' && is_file($dir_path . '/' . $entry)) {
+                    if (preg_match('/^(.+)\.service\.ini$/', $entry, $service_id)) {
+                        $this->services[$service_id[1]] = new Service($this, $service_id[1]);
+                    }
+                }
+            }
+            closedir($handle);
+        } else {
+            throw new NotFoundException("Directory $dir_path not found!");
+        }
+        ksort($this->services, SORT_NATURAL);
+    }
+
+    // TODO: implement in a right manner
+    public function processAction($action, ...$params)
+    {
+        if ($action == "powerbutton") {
+            if (!empty($this->settings('mac_address'))) {
+                try {
+                    $shellreturn = $this->exec('shutdown -h now');
+                    echo 'sent shutdown command to server; shutting down.';
+                } catch (NotRunningException $e) {
+                    $wakecommand = 'wakeonlan ' . $this->settings->get('mac_address');
+                    $shellreturn = shell_exec($wakecommand);
+                    echo 'executed ' . $wakecommand;
+                    echo 'got in return: <pre>' . $shellreturn . '</pre>';
+                } finally {
+                    echo 'received call for action, will reload page in 20 seconds';
+
+                    echo '<script>window.setTimeout(function() {
+                        let loc = window.location.protocol + "//" + window.location.host + window.location.pathname; 
+                        window.location.replace(loc); 
+                    }, 20000);</script>';
+                }
+            } else {
+                throw new NotFoundException('The server could not be shut down / started because there was no mac adress configured!');
+            }
+        }
     }
 }
