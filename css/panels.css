@@ -129,7 +129,7 @@ h1.panel-heading {
 /* Panel-Effekte */
 
 .panel:target, .panel:focus {
-  box-shadow: orange 0em 0em 1em 0.5em;
+  box-shadow: white 0em 0em 1em 0.5em;
 }
 
 /* Statusmeldungen */

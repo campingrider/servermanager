@@ -337,7 +337,7 @@ class Server
     public function processAction($action, ...$params)
     {
         if ($action == "powerbutton") {
-            if (!empty($this->settings('mac_address'))) {
+            if (!empty($this->settings->get('mac_address'))) {
                 try {
                     $shellreturn = $this->exec('shutdown -h now');
                     echo 'sent shutdown command to server; shutting down.';
