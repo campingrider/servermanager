@@ -8,6 +8,18 @@
   align-items: center;
 }
 
+/* Überschrift für Panels */
+
+h1.panel-heading {
+  margin: 0.5em 0;
+  padding: 0.125em 0;
+  height: 1.5em;
+  color: white;
+  background-size: contain;
+  background-repeat: space;
+  background-blend-mode: difference;
+}
+
 /* Panel-Elemente */
 
 .panel {
@@ -61,6 +73,13 @@
   grid-row: 2 / auto;
 }
 
+.panel>header a {
+  text-decoration: none;
+  color: black;
+  width: 100%;
+  display: inline-block;
+}
+
 .panel>header img {
   width: 2.5em;
 }
@@ -105,6 +124,12 @@
 .panel>footer p {
   margin: 0.25ex 0ex;
   text-align: center;
+}
+
+/* Panel-Effekte */
+
+.panel:target, .panel:focus {
+  box-shadow: orange 0em 0em 1em 0.5em;
 }
 
 /* Statusmeldungen */

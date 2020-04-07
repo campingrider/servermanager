@@ -140,9 +140,16 @@ class Server
         $html .= ' id="server-'.$this->getUniqueIdentifier().'">';
         $html .= "<header>";
         
+        $html .= '<a href="#server-'.$this->getUniqueIdentifier();
+        $html .= '">';
+
         $html .= '<img src="./svg/server.svg" alt="Server: ">';
         
-        $html .= '<h1>' . $this->getTitle() . '</h1>';
+        $html .= '</a>';
+
+        $html .= '<h1><a href="#server-'.$this->getUniqueIdentifier();
+        $html .= '">';
+        $html .= $this->getTitle() . '</a></h1>';
 
         $html .= '<form action="" method="POST">';
         $html .= '<input type="hidden" name="server" value="' . $this->server_id . '">';
@@ -240,6 +247,16 @@ class Server
         preg_match('/(\d+)\%/', $answer, $matches);
 
         return intval($matches[1]);
+    }
+
+    /**
+     * Getter for the services running on the server.
+     *
+     * @return Service[] list of services
+     */
+    public function getServices()
+    {
+        return $this->services;
     }
 
     const STATUS_OFF = 0;

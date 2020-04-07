@@ -86,6 +86,126 @@ class Service
         $this->settings = new IniSettings($settings_path, Service::$settings_default, Service::$settings_descriptions);
     }
 
+    /**
+     * Creates the HTML representing the server.
+     *
+     * Contains the HTML created by the corresponding methods of the provided services.
+     * Provides overall information on and funtionality of the specific server.
+     *
+     * @return string The assembled HTML code.
+     */
+    public function assembleHTML()
+    {
+        $status = $this->getStatus();
+
+        $img = '<img style="width:1em;" ';
+        $short = 'status-';
+        switch ($status) {
+            case Server::STATUS_LISTENING:
+                $text = 'Bereit!';
+                $short .= 'listening';
+                $img .= 'alt="Bereit" src="./svg/check.svg">';
+                break;
+            case Server::STATUS_RUNNING:
+                $text = 'Noch nicht bereit!';
+                $short .= 'running';
+                $img .= 'alt="Nicht Bereit" src="./svg/hourglass.svg">';
+                break;
+            case Server::STATUS_OFF:
+            default:
+                $text = 'Ausgeschaltet!';
+                $short .= 'off';
+                $img .= 'alt="Ausgeschaltet" src="./svg/close.svg">';
+                break;
+        }
+
+        $html = '';
+        $html .= '<section class="panel service ' . $short . '"';
+        $html .= ' id="service-'.$this->getUniqueIdentifier().'">';
+        $html .= "<header>";
+        
+        $html .= '<a href="#service-'.$this->getUniqueIdentifier();
+        $html .= '">';
+        
+        $html .= '<img src="./svg/gears.svg" alt="Service: ">';
+
+        $html .= '</a>';
+        
+        $html .= '<h1>';        
+        $html .= '<a href="#service-'.$this->getUniqueIdentifier();
+        $html .= '">';
+
+        $html .= $this->getTitle();
+        
+        /*
+        $html .= ' @ ';
+        $html .= $this->server->getTitle();
+        */
+
+        $html .= '</a></h1>';
+
+        /* This needs refactoring! Copy-Paste from Server code
+        $html .= '<form action="" method="POST">';
+        $html .= '<input type="hidden" name="server" value="' . $this->server_id . '">';
+        $html .= '<input type="hidden" name="action" value="powerbutton">';
+
+        // only add powerbutton if this server can be started via wakeonlan
+        if (!empty($this->settings->get('mac_address'))) {
+            $html .= '<button type="submit" title="An-/Abschalten">';
+            $html .= '<img src="./svg/power-off.svg" alt="An-/Abschalten!">';
+            $html .= '</button>';
+        }
+
+        $html .= '</form>';
+        */
+
+        $html .= "</header>";
+
+        $html .= '<p class="server">';
+        $html .= '<a href="#server-'.$this->server->getUniqueIdentifier().'">';
+        $html .= '<img src="./svg/caret-up.svg" alt="Nach oben: ">';
+        $html .= '<span>';       
+        $html .= $this->server->getTitle();
+        $html .= '</span>';
+        $html .= '<img src="./svg/server.svg" alt="- Link zum Server">';
+        $html .= '</a>';
+        $html .= '</p>';
+
+        $html .= '<p>Zu diesem Dienst liegen keine weiteren Informationen vor.</p>';
+
+        $html .= '<footer>';
+        
+        $html .= '<p>Service Status: ' . $text;
+        $html .= '</p>';
+        
+        $html .= '<footer>';
+
+        $html .= '</section>';
+
+        return $html;
+    }
+
+    /**
+    * Creates the HTML representing the service in the list of services
+    *
+    * @return string The assembled HTML code.
+    */
+   public function assembleListEntry()
+   {
+       $html = ''; 
+       $html .= '<li>';
+       $html .= '<a href="#service-'.$this->getUniqueIdentifier().'">';
+       $html .= '<img src="./svg/gears.svg" alt="Service: ">';
+       $html .= '<span>';       
+       $html .= $this->getTitle();
+       $html .= '</span>';
+       $html .= '<img src="./svg/caret-down.svg" alt=" - linked here!">';
+       $html .= '</a>';
+       $html .= '</li>';
+
+       return $html;
+   }
+
     const STATUS_OFF = 0;
     const STATUS_RUNNING = 1;
     const STATUS_LISTENING = 2;
@@ -117,26 +237,5 @@ class Service
     {
         $id = $this->service_id . '-' . $this->server->getUniqueIdentifier();
         return $id;
-    }
-
-     /**
-     * Creates the HTML representing the service in the list of services
-     *
-     * @return string The assembled HTML code.
-     */
-    public function assembleListEntry()
-    {
-        $html = ''; 
-        $html .= '<li>';
-        $html .= '<a href="#service-'.$this->getUniqueIdentifier().'">';
-        $html .= '<img src="./svg/gears.svg" alt="Service: ">';
-        $html .= '<span>';       
-        $html .= $this->getTitle();
-        $html .= '</span>';
-        $html .= '<img src="./svg/caret-down.svg" alt=" - linked here!">';
-        $html .= '</a>';
-        $html .= '</li>';
-
-        return $html;
     }
 }

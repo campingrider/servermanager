@@ -129,14 +129,29 @@ class Manager
      */
     public function assembleHTML()
     {
-        $html = '';
-        $html .= '<section id="servers" class="panel-container">';
+        $html_servers = '';
+        $html_services = '';
         foreach ($this->servers as $server) {
-            $html .= $server->assembleHTML();
+            $html_servers .= $server->assembleHTML();
+            foreach ($server->getServices() as $service) {
+                $html_services .= $service->assembleHTML();
+            }
         }
+
+        $html = '';
+
+        $html .= '<h1 class="panel-heading">Servers</h1>';
+        
+        $html .= '<section id="servers" class="panel-container">';
+        $html .= $html_servers;
         $html .= '</section>';
+        
+        $html .= '<h1 class="panel-heading">Services</h1>';
+
         $html .= '<section id="services" class="panel-container">';
+        $html .= $html_services;
         $html .= '</section>';
+
         return $html;
     }
 

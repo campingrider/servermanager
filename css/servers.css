@@ -1,3 +1,9 @@
+/* Überschrift für Panels */
+
+h1.panel-heading:nth-of-type(1) {
+  background-image: url(../svg/server.svg);
+}
+
 /* Service-Liste */
 
 ul.services {
@@ -73,38 +79,38 @@ ul.services a>img:last-of-type {
 
 /* Status-Effekte */
 
-.server.status-listening {
+.panel.server.status-listening {
   background-color: #9f9;
   border-color: #181;
   background-image: linear-gradient(to bottom right, white, silver, white, #c0ffc0);
 }
-.server.status-listening>header, .server.status-listening>footer {
+.panel.server.status-listening>header, .panel.server.status-listening>footer {
   border-color: #181;
 }
-.server.status-listening>header>form img {  
+.panel.server.status-listening>header>form img {  
   background-image: radial-gradient(#c0ffc0, transparent);
 }
 
-.server.status-running {
+.panel.server.status-running {
   background-color: #ff9;
   border-color: #881;
   background-image: linear-gradient(to bottom right, white, silver, white, #ffffc0);
 }
-.server.status-running>header, .server.status-running>footer {
+.panel.server.status-running>header, .panel.server.status-running>footer {
   border-color: #881;
 }
-.server.status-running>header>form img {
+.panel.server.status-running>header>form img {
   background-image: radial-gradient(#ffffc0, transparent);
 }
 
-.server.status-off {
+.panel.server.status-off {
   background-color: #f99;
   border-color: #811;
   background-image: linear-gradient(to bottom right, white, silver, white, #ffc0c0);
 }
-.server.status-off>header, .server.status-off>footer {
+.panel.server.status-off>header, .panel.server.status-off>footer {
   border-color: #811;
 }
-.server.status-off>header>form img {  
+.panel.server.status-off>header>form img {  
   background-image: radial-gradient(#ffc0c0, transparent);
 }
