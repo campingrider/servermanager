@@ -13,6 +13,7 @@ namespace campingrider\servermanager;
 use \InvalidArgumentException as InvalidArgumentException;
 use campingrider\servermanager\exceptions\NotFoundException as NotFoundException;
 use campingrider\servermanager\exceptions\UnexpectedStateException as UnexpectedStateException;
+use campingrider\servermanager\utility\IniSettings as IniSettings;
 
 /**
  * This class contains overall settings and controls the behavior of the system.
@@ -44,13 +45,11 @@ class Manager
     );
 
     /**
-     * Settings for the server manager.
+     * Default settings for the server manager.
      *
-     * Contains settings for the server manager; initially contains default values for all settings.
-     *
-     * @var string[] $settings
+     * @var string[] $settings_default
      */
-    private $settings = array(
+    private static $settings_default = array(
         'title'           => 'Title not configured yet',
         'banner_path'     => 'no_path.png',
         'server_dir_path' => './servers',
@@ -58,6 +57,13 @@ class Manager
         'groups_path'     => './custom/groups.ini',
         'add_localhost'   => 'off'
     );
+
+    /**
+     * The settings object managing all settings for this server manager.
+     * 
+     * @var IniSettings $settings
+     */
+    private $settings = null;
 
     /**
      * Array of all the servers managed by this manager.
@@ -69,56 +75,15 @@ class Manager
     /**
      * Constructor.
      *
-     * @param string|string[] $settings Either string as Path of an ini-File containing all settings which shall
-     *                                  be loaded or Array of strings containing all settings which shall be loaded.
+     * @param string $settings_path Path of an ini-File containing all settings which shall be loaded.
      * @throws NotFoundException Thrown if the ini-File is not found at the given location.
-     * @throws InvalidArgumentException Thrown if $settings is not of type string or array.
      */
-    public function __construct($settings)
-    {
+    public function __construct($settings_path)
+    {   
+        // load settings
+        $this->settings = new IniSettings($settings_path, Manager::$settings_default, Manager::$settings_descriptions);       
 
-        $loaded_settings = array();
-
-        // load either from file or from array.
-        if (is_string($settings)) {
-            if (is_file($settings)) {
-                $loaded_settings = parse_ini_file($settings);
-            } else {
-                throw new NotFoundException("File $settings not found!");
-            }
-        } elseif (is_array($settings)) {
-            $loaded_settings = $settings;
-        } else {
-            throw new InvalidArgumentException(
-                '$settings needs to be of type string or string[], not ' . gettype($settings) . '!'
-            );
-        }
-
-        // overwrite default settings with loaded settings.
-        $write_ini = false;
-
-        foreach ($this->settings as $setting_id => $defaultvalue) {
-            if (isset($loaded_settings[ $setting_id ])) {
-                $this->settings[ $setting_id ] = $loaded_settings[ $setting_id ];
-            } else {
-                // setting was not found in loaded values - if loaded from ini file set to rewrite file!
-                $write_ini = $write_ini || (is_string($settings) && is_dir(dirname($settings)));
-            }
-        }
-
-        // write ini with newer version if ini was not complete.
-        if ($write_ini) {
-            $content = "; General settings. Adjust to your needs. Caution: Syntax errors and other breaking changes might result in the whole file being overwritten by default values! You may want to backup this file before changing.\n; ------------------------------ \n\n";
-            foreach ($this->settings as $setting_id => $value) {
-                if (isset(Manager::$settings_descriptions[ $setting_id ])) {
-                    $content .= '; ' . Manager::$settings_descriptions[ $setting_id ] . "\n";
-                }
-                $content .= $setting_id . ' = "' . $value . '"' . "\n\n";
-            }
-            file_put_contents($settings, $content);
-        }
-
-        $this->doorman = new security\Doorman($this->settings['users_path'], $this->settings['groups_path']);
+        $this->doorman = new security\Doorman($this->settings->get('users_path'), $this->settings->get('groups_path'));
 
         $this->loadServers();
     }
@@ -152,9 +117,6 @@ class Manager
         } else {
             throw new NotFoundException("Directory $dir_path not found!");
         }
-
-
-
     }
 
     /**
@@ -169,7 +131,7 @@ class Manager
         $dir_path = $this->getServerDirPath();
 
         // automatically add localhost if configured this way
-        if ($this->settings['add_localhost'] == 'on') {
+        if ($this->settings->get('add_localhost') == 'on') {
             try {
                 $this->addServer('localhost', 'title = "localhost"' . "\n" . 'ip = "127.0.0.1"');
             } catch(UnexpectedStateException $e) {
@@ -199,7 +161,7 @@ class Manager
      */
     public function getTitle()
     {
-        return $this->settings['title'];
+        return $this->settings->get('title');
     }
 
     /**
@@ -209,7 +171,7 @@ class Manager
      */
     public function getServerDirPath()
     {
-        return $this->settings['server_dir_path'];
+        return $this->settings->get('server_dir_path');
     }
 
     /**

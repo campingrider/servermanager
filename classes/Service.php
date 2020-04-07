@@ -14,6 +14,7 @@ use campingrider\servermanager\exceptions\NotFoundException as NotFoundException
 use campingrider\servermanager\exceptions\ServerConfigurationException as ServerConfigurationException;
 use campingrider\servermanager\exceptions\NotRunningException as NotRunningException;
 use campingrider\servermanager\exceptions\UnexpectedStateException as UnexpectedStateException;
+use campingrider\servermanager\utility\IniSettings as IniSettings;
 
 /**
  * Class for representing and managing a single server machine
@@ -35,15 +36,20 @@ class Service
     );
 
     /**
-     * Settings for the server.
+     * Default settings for services.
      *
-     * Contains settings for the server; initially contains default values for all settings.
-     *
-     * @var string[] $settings
+     * @var string[] $settings_default
      */
-    private $settings = array(
+    private static $settings_default = array(
         'title'       => 'Title for service not configured yet',
     );
+
+    /**
+     * The settings object managing all settings for this service.
+     * 
+     * @var IniSettings $settings
+     */
+    private $settings = null;
 
     /**
      * The server on which this service is running.
@@ -73,42 +79,11 @@ class Service
         $this->server = $server;
         $this->service_id = $service_id;
 
-        $loaded_settings = array();
-
-        // getDirPath may throw NotFoundException
         $dir_path = $this->server->getDirPath();
         $settings_path = $dir_path . '/' . $service_id . '.service.ini';
 
-        // load settings from file.
-        if (is_file($settings_path)) {
-            $loaded_settings = parse_ini_file($settings_path);
-        } else {
-            throw new NotFoundException("File $settings_path not found!");
-        }
-
-        // overwrite default settings with loaded settings.
-        $write_ini = false;
-        foreach ($this->settings as $setting_id => $defaultvalue) {
-            if (isset($loaded_settings[ $setting_id ])) {
-                $this->settings[ $setting_id ] = $loaded_settings[ $setting_id ];
-            } else {
-                // setting was not found in loaded values - so it needs to be written to the settings file!
-                $write_ini = true;
-            }
-        }
-
-        // write ini with newer version if ini was not complete.
-        if ($write_ini) {
-            $content = "; Settings for service with id $service_id. Adjust to your needs. Caution: Syntax errors and other breaking changes might result in the whole file being overwritten by default values! You may want to backup this file before changing.";
-            $content .= "\n; ------------------------------ \n\n";
-            foreach ($this->settings as $setting_id => $value) {
-                if (isset(Server::$settings_descriptions[ $setting_id ])) {
-                    $content .= '; ' . Server::$settings_descriptions[ $setting_id ] . "\n";
-                }
-                $content .= $setting_id . ' = "' . $value . '"' . "\n\n";
-            }
-            file_put_contents($settings_path, $content);
-        }
+        // load settings
+        $this->settings = new IniSettings($settings_path, Service::$settings_default, Service::$settings_descriptions);
     }
 
     /**
@@ -118,11 +93,11 @@ class Service
      */
     public function getTitle()
     {
-        return $this->settings['title'];
+        return $this->settings->get('title');
     }
 
     /**
-     * Creates a globally unique identifier for this service
+     * Creates a manager-wide unique identifier for this service
      */
     public function getUniqueIdentifier()
     {

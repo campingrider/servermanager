@@ -14,6 +14,8 @@ use campingrider\servermanager\exceptions\NotFoundException as NotFoundException
 use campingrider\servermanager\exceptions\ServerConfigurationException as ServerConfigurationException;
 use campingrider\servermanager\exceptions\NotRunningException as NotRunningException;
 use campingrider\servermanager\exceptions\UnexpectedStateException as UnexpectedStateException;
+use campingrider\servermanager\utility\IniSettings as IniSettings;
+
 
 /**
  * Class for representing and managing a single server machine
@@ -38,18 +40,23 @@ class Server
     );
 
     /**
-     * Settings for the server.
+     * Default settings servers.
      *
-     * Contains settings for the server; initially contains default values for all settings.
-     *
-     * @var string[] $settings
+     * @var string[] $settings_default
      */
-    private $settings = array(
+    private static $settings_default = array(
         'title'       => 'Title for server not configured yet',
         'mac_address' => '',
         'ip'          => '',
         'user'        => 'root'
     );
+
+    /**
+     * The settings object managing all settings for this server.
+     * 
+     * @var IniSettings $settings
+     */
+    private $settings = null;
 
     /**
      * The parental server manager managing this server.
@@ -70,7 +77,7 @@ class Server
      *
      * @var Service[] $services;
      */
-    private $services;
+    private $services = array();
 
     /**
      * Constructor.
@@ -85,44 +92,12 @@ class Server
     {
         $this->manager = $manager;
         $this->server_id = $server_id;
-        $this->services = array();
 
-        $loaded_settings = array();
-
-        // getDirPath may throw NotFoundException
         $dir_path = $this->getDirPath();
         $settings_path = $dir_path . '/settings.ini';
 
-        // load settings from file.
-        if (is_file($settings_path)) {
-            $loaded_settings = parse_ini_file($settings_path);
-        } else {
-            throw new NotFoundException("File $settings_path not found!");
-        }
-
-        // overwrite default settings with loaded settings.
-        $write_ini = false;
-        foreach ($this->settings as $setting_id => $defaultvalue) {
-            if (isset($loaded_settings[ $setting_id ])) {
-                $this->settings[ $setting_id ] = $loaded_settings[ $setting_id ];
-            } else {
-                // setting was not found in loaded values - so it needs to be written to the settings file!
-                $write_ini = true;
-            }
-        }
-
-        // write ini with newer version if ini was not complete.
-        if ($write_ini) {
-            $content = "; Settings for server with id $server_id. Adjust to your needs. Caution: Syntax errors and other breaking changes might result in the whole file being overwritten by default values! You may want to backup this file before changing.";
-            $content .= "\n; ------------------------------ \n\n";
-            foreach ($this->settings as $setting_id => $value) {
-                if (isset(Server::$settings_descriptions[ $setting_id ])) {
-                    $content .= '; ' . Server::$settings_descriptions[ $setting_id ] . "\n";
-                }
-                $content .= $setting_id . ' = "' . $value . '"' . "\n\n";
-            }
-            file_put_contents($settings_path, $content);
-        }
+        // load settings
+        $this->settings = new IniSettings($settings_path, Server::$settings_default, Server::$settings_descriptions);
 
         $this->loadServices();
     }
@@ -179,7 +154,7 @@ class Server
      */
     public function getTitle()
     {
-        return $this->settings['title'];
+        return $this->settings->get('title');
     }
 
     /**
@@ -238,7 +213,7 @@ class Server
         $html .= '<input type="hidden" name="action" value="powerbutton">';
 
         // only add powerbutton if this server can be started via wakeonlan
-        if (!empty($this->settings['mac_address'])) {
+        if (!empty($this->settings->get('mac_address'))) {
             $html .= '<button type="submit" title="An-/Abschalten">';
             $html .= '<img src="./svg/power-off.svg" alt="An-/Abschalten!">';
             $html .= '</button>';
@@ -277,7 +252,7 @@ class Server
                     $shellreturn = $this->exec('shutdown -h now');
                     echo 'sent shutdown command to server; shutting down.';
                 } catch (NotRunningException $e) {
-                    $wakecommand = 'wakeonlan ' . $this->settings['mac_address'];
+                    $wakecommand = 'wakeonlan ' . $this->settings->get('mac_address');
                     $shellreturn = shell_exec($wakecommand);
                     echo 'executed ' . $wakecommand;
                     echo 'got in return: <pre>' . $shellreturn . '</pre>';
@@ -307,7 +282,7 @@ class Server
     private function exec($command)
     {
         // prepare ssh call
-        $ssh_command = "ssh ".$this->settings['user']."@" . $this->settings['ip'];
+        $ssh_command = "ssh ".$this->settings->get('user')."@" . $this->settings->get('ip');
 
         // try to call the server in order to ensure it is running
         if (strlen(\shell_exec($ssh_command)) === 0) {
@@ -330,10 +305,10 @@ class Server
         $answer = '';
         if (strtoupper(\substr(php_uname('s'), 0, 3)) === 'WIN') {
             // we're running on windows
-            $answer = shell_exec('ping ' . $this->settings['ip'] . ' -n 1 -w 1');
+            $answer = shell_exec('ping ' . $this->settings->get('ip') . ' -n 1 -w 1');
         } else {
             // we're running on linux
-            $answer = shell_exec('ping ' . $this->settings['ip'] . ' -w 1');
+            $answer = shell_exec('ping ' . $this->settings->get('ip') . ' -w 1');
         }
         $matches = array();
         preg_match('/(\d+)\%/', $answer, $matches);
