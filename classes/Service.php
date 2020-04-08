@@ -226,7 +226,7 @@ class Service
             case 'systemd':
                 try {
                     $shellreturn = $this->server->exec('systemctl is-active '.$this->settings->get('id_internal'));
-                    if (strpos($shellreturn, 'active') !== false) {
+                    if (strpos($shellreturn, 'inactive') === false) {
                         return Service::STATUS_RUNNING;
                     } else {
                         return Service::STATUS_OFF;
