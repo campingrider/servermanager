@@ -12,6 +12,7 @@ namespace campingrider\servermanager;
 
 use campingrider\servermanager\exceptions\NotFoundException as NotFoundException;
 use campingrider\servermanager\exceptions\ServerConfigurationException as ServerConfigurationException;
+use campingrider\servermanager\exceptions\ServiceConfigurationException as ServiceConfigurationException;
 use campingrider\servermanager\exceptions\NotRunningException as NotRunningException;
 use campingrider\servermanager\exceptions\UnexpectedStateException as UnexpectedStateException;
 use campingrider\servermanager\utility\IniSettings as IniSettings;
@@ -32,7 +33,9 @@ class Service
      * @var string[] $settings_descriptions
      */
     private static $settings_descriptions = array(
-        'title'       => 'The following phrase is shown as a title for the service'
+        'title'       => 'The following phrase is shown as a title for the service',
+        'id_internal' => 'Identifier for this service used by the Service/Daemon-system',
+        'type'        => 'Type of the service, i.e. type of the service-system the service runs on'
     );
 
     /**
@@ -42,6 +45,8 @@ class Service
      */
     private static $settings_default = array(
         'title'       => 'Title for service not configured yet',
+        'id_internal' => '',
+        'type'        => 'systemd'
     );
 
     /**
@@ -101,17 +106,12 @@ class Service
         $img = '<img style="width:1em;" ';
         $short = 'status-';
         switch ($status) {
-            case Server::STATUS_LISTENING:
+            case Service::STATUS_RUNNING:
                 $text = 'Bereit!';
-                $short .= 'listening';
+                $short .= 'running';
                 $img .= 'alt="Bereit" src="./svg/check.svg">';
                 break;
-            case Server::STATUS_RUNNING:
-                $text = 'Noch nicht bereit!';
-                $short .= 'running';
-                $img .= 'alt="Nicht Bereit" src="./svg/hourglass.svg">';
-                break;
-            case Server::STATUS_OFF:
+            case Service::STATUS_OFF:
             default:
                 $text = 'Ausgeschaltet!';
                 $short .= 'off';
@@ -208,16 +208,36 @@ class Service
 
     const STATUS_OFF = 0;
     const STATUS_RUNNING = 1;
-    const STATUS_LISTENING = 2;
     
     /**
      * Determines whether the service is running.
      *
+     * @throws ServiceConfigurationException if the command can not be issued properly
+     * 
      * @return int Integer describing current service status.
      */
     private function getStatus()
     {
-        return Service::STATUS_OFF;
+        if (empty($this->settings->get('id_internal'))) {
+            return Service::STATUS_OFF;
+        }
+
+        switch ($this->settings->get('type')) {
+            case 'systemd':
+                try {
+                    $shellreturn = $this->server->exec('systemctl is-active '.$this->settings->get('id_internal'));
+                    if (strpos($shellreturn, 'active') !== false) {
+                        return Service::STATUS_RUNNING;
+                    } else {
+                        return Service::STATUS_OFF;
+                    }
+                } catch (NotRunningException $e) {
+                    return Service::STATUS_OFF;
+                } 
+                break;
+            default:
+                throw new ServiceConfigurationException('Type '.$this->settings->get('type').' of service '.$this->getUniqueIdentifier().' is unknown.');
+        }
     }
 
     /**
@@ -237,5 +257,38 @@ class Service
     {
         $id = $this->service_id . '-' . $this->server->getUniqueIdentifier();
         return $id;
+    }
+
+    /**
+     * Determines whether the service is enabled.
+     *
+     * @throws ServiceConfigurationException if the command can not be issued properly
+     * 
+     * @return boolean whether the service is enabled or not
+     */
+    private function is_enabled()
+    {
+        if (empty($this->settings->get('id_internal'))) {
+            return false;
+        }
+
+        switch ($this->settings->get('type')) {
+            case 'systemd':
+                try {
+                    $shellreturn = $this->server->exec('systemctl is-enabled '.$this->settings->get('id_internal'));
+                    return (strpos($shellreturn, 'active') !== false);
+                } catch (NotRunningException $e) {
+                    return false;
+                }
+                break;
+            default:
+                throw new ServiceConfigurationException('Type '.$this->settings->get('type').' of service '.$this->getUniqueIdentifier().' is unknown.');
+        }
+    }
+
+    // TODO: implement in a right manner
+    public function processAction($service_id, $action, ...$params)
+    {
+        return "Nothing done...";
     }
 }

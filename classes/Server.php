@@ -195,7 +195,7 @@ class Server
      * @throws NotRunningException Thrown if the server is not running at the moment.
      * @return string The output given by the server
      */
-    private function exec($command)
+    public function exec($command)
     {
         // prepare ssh call
         $ssh_command = "ssh ".$this->settings->get('user')."@" . $this->settings->get('ip');
@@ -334,29 +334,33 @@ class Server
     }
 
     // TODO: implement in a right manner
-    public function processAction($action, ...$params)
+    public function processAction($service_id, $action, ...$params)
     {
-        if ($action == "powerbutton") {
-            if (!empty($this->settings->get('mac_address'))) {
-                try {
-                    $shellreturn = $this->exec('shutdown -h now');
-                    echo 'sent shutdown command to server; shutting down.';
-                } catch (NotRunningException $e) {
-                    $wakecommand = 'wakeonlan ' . $this->settings->get('mac_address');
-                    $shellreturn = shell_exec($wakecommand);
-                    echo 'executed ' . $wakecommand;
-                    echo 'got in return: <pre>' . $shellreturn . '</pre>';
-                } finally {
-                    echo 'received call for action, will reload page in 20 seconds';
-
-                    echo '<script>window.setTimeout(function() {
-                        let loc = window.location.protocol + "//" + window.location.host + window.location.pathname; 
-                        window.location.replace(loc); 
-                    }, 20000);</script>';
+        if ($service_id === null) {
+            if ($action == "powerbutton") {
+                if (!empty($this->settings->get('mac_address'))) {
+                    try {
+                        $shellreturn = $this->exec('shutdown -h now');
+                        echo 'sent shutdown command to server; shutting down.';
+                    } catch (NotRunningException $e) {
+                        $wakecommand = 'wakeonlan ' . $this->settings->get('mac_address');
+                        $shellreturn = shell_exec($wakecommand);
+                        echo 'executed ' . $wakecommand;
+                        echo 'got in return: <pre>' . $shellreturn . '</pre>';
+                    } finally {
+                        echo 'received call for action, will reload page in 20 seconds';
+                        
+                        echo '<script>window.setTimeout(function() {
+                            let loc = window.location.protocol + "//" + window.location.host + window.location.pathname; 
+                            window.location.replace(loc); 
+                        }, 20000);</script>';
+                    }
                 }
             } else {
                 throw new NotFoundException('The server could not be shut down / started because there was no mac adress configured!');
             }
+        } else {
+            $this->services[$serviceid]->processAction($action, $params);
         }
     }
 }

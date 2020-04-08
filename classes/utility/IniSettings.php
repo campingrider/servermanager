@@ -109,8 +109,8 @@ class IniSettings {
         if (isset($loaded_settings[ $setting_id ])) {
           $this->settings[ $setting_id ] = $loaded_settings[ $setting_id ];
         } else {
-          // setting was not found in loaded values - if loaded from ini file set to rewrite file!
-          $write_ini = $write_ini || (is_string($settings) && is_dir(dirname($settings)));
+          // setting was not found in loaded values - set to rewrite file!
+          $write_ini = true;
         }
       }
       
@@ -164,8 +164,8 @@ class IniSettings {
 
     $content = "; General settings. Adjust to your needs. Caution: Syntax errors and other breaking changes might result in the whole file being overwritten by default values! You may want to backup this file before changing.\n; ------------------------------ \n\n";
     foreach ($this->settings as $setting_id => $value) {
-        if (isset($this->descriptions[ $setting_id ])) {
-            $content .= '; ' . $this->descriptions[ $setting_id ] . "\n";
+        if (isset($this->settings_descriptions[ $setting_id ])) {
+            $content .= '; ' . $this->settings_descriptions[ $setting_id ] . "\n";
         }
         $content .= $setting_id . ' = "' . $value . '"' . "\n\n";
     }

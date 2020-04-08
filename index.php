@@ -51,7 +51,11 @@
         // TODO: implement in a right manner
         if (isset($_POST['action']) && isset($_POST['server'])) {
             echo '<section>';
-            $manager->processAction($_POST['server'], $_POST['action']);
+            if (isset($_POST['service'])) {
+                $manager->processAction($_POST['server'], $_POST['service'], $_POST['action']);
+            } else {
+                $manager->processAction($_POST['server'], null, $_POST['action']);
+            }
             echo '<section>';
         }
         ?></aside> 

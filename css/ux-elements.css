@@ -1,3 +1,8 @@
+/* buttons */
+button, button * {
+  cursor: pointer;
+}
+
 /* messages */
 #messages::before {
   content: ' ';

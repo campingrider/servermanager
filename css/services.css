@@ -73,28 +73,16 @@ h1.panel-heading:nth-of-type(2) {
 
 /* Status-Effekte */
 
-.panel.service.status-listening {
+.panel.service.status-running {
   background-color: #9f9;
   border-color: #181;
   background-image: linear-gradient(to bottom right, white, silver, white, #c0ffc0);
 }
-.panel.service.status-listening>header, .panel.service.status-listening>footer {
+.panel.service.status-running>header, .panel.service.status-listening>footer {
   border-color: #181;
 }
-.panel.service.status-listening>header>form img {  
+.panel.service.status-running>header>form img {  
   background-image: radial-gradient(#c0ffc0, transparent);
-}
-
-.panel.service.status-running {
-  background-color: #ff9;
-  border-color: #881;
-  background-image: linear-gradient(to bottom right, white, silver, white, #ffffc0);
-}
-.panel.service.status-running>header, .panel.service.status-running>footer {
-  border-color: #881;
-}
-.panel.service.status-running>header>form img {
-  background-image: radial-gradient(#ffffc0, transparent);
 }
 
 .panel.service.status-off {

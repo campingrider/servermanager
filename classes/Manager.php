@@ -247,8 +247,8 @@ class Manager
     }
 
     // TODO: implement in a right manner
-    public function processAction($serverid, $action, ...$params)
+    public function processAction($serverid, $serviceid, $action, ...$params)
     {
-        $this->servers[$serverid]->processAction($action, $params);
+        $this->servers[$serverid]->processAction($serviceid, $action, $params);
     }
 }
